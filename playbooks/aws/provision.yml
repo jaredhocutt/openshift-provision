@@ -1,0 +1,14 @@
+---
+
+- hosts: localhost
+  gather_facts: no
+  roles:
+    - provision_aws
+    - host_facts_aws
+
+- hosts: openshift_role_bastion:&openshift_cluster_{{ cluster_name }}
+  vars:
+    provision_type: aws
+  roles:
+    - rhsm_subscribe
+    - host_prep_bastion

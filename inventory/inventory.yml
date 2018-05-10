@@ -1,0 +1,11 @@
+---
+
+all:
+  hosts:
+    localhost:
+      ansible_python_interpreter: python
+      ansible_connection: local
+  children:
+    aws_ec2:
+      vars:
+        ansible_user: ec2-user

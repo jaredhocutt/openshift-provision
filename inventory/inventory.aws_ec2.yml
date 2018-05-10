@@ -1,0 +1,16 @@
+---
+
+plugin: aws_ec2
+
+regions:
+  - us-east-1
+
+keyed_groups:
+  - prefix: openshift_role
+    key: tags.OpenShiftRole
+  - prefix: openshift_cluster
+    key: tags.OpenShiftClusterName
+
+groups:
+  openshift_nodes:
+    tags.OpenShiftRole in ['master', 'infra', 'app']

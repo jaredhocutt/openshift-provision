@@ -1,0 +1,11 @@
+---
+
+- hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Start EC2 instances
+      ec2_instance:
+        region: "{{ aws_region }}"
+        filters:
+          tag:OpenShiftClusterName: "{{ cluster_name }}"
+        state: started

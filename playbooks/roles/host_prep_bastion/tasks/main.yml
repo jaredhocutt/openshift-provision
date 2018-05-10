@@ -1,0 +1,24 @@
+---
+
+- name: Install required packages
+  yum:
+    name:
+      - atomic-openshift-utils
+    state: present
+  become: yes
+
+- name: Install preferred packages
+  yum:
+    name:
+      - vim
+      - screen
+    state: present
+  become: yes
+
+- name: Copy EC2 key
+  copy:
+    src: "{{ ec2_key_file }}"
+    dest: ~/.ssh/id_rsa
+    mode: 0600
+    backup: yes
+  become: yes

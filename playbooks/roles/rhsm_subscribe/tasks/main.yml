@@ -1,0 +1,29 @@
+---
+
+- include_tasks: aws.yml
+  when: provision_type == 'aws'
+
+- name: Register host to RHSM and attach pool
+  redhat_subscription:
+    username: "{{ rhsm_username }}"
+    password: "{{ rhsm_password }}"
+    pool_ids: "{{ rhsm_pool }}"
+    consumer_name: "{{ rhsm_consumer_name | default(omit) }}"
+    state: present
+  become: yes
+
+- name: Enabled required repositories
+  rhsm_repository:
+    name: "{{ openshift_repos }}"
+    state: enabled
+  register: openshift_enable_repos
+  become: yes
+
+- name: Disable non-required repositories
+  rhsm_repository:
+    name: "{{
+      openshift_enable_repos.repositories |
+      map(attribute='id') |
+      difference(openshift_repos) }}"
+    state: disabled
+  become: yes

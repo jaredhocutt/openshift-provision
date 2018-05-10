@@ -1,0 +1,48 @@
+---
+
+ec2_ami_ids:
+  ap-south-1:
+    cloud_access: ami-cc9ce4a3
+    hourly: ami-cc9ce4a3
+  eu-west-3:
+    cloud_access: ami-1c912661
+    hourly: ami-1c912661
+  eu-west-2:
+    cloud_access: ami-f5776691
+    hourly: ami-f5776691
+  eu-west-1:
+    cloud_access: ami-654fa61c
+    hourly: ami-654fa61c
+  ap-northeast-2:
+    cloud_access: ami-ed588183
+    hourly: ami-ed588183
+  ap-northeast-1:
+    cloud_access: ami-9c3edefa
+    hourly: ami-9c3edefa
+  sa-east-1:
+    cloud_access: ami-e5f78189
+    hourly: ami-e5f78189
+  ca-central-1:
+    cloud_access: ami-9c1aa5f8
+    hourly: ami-9c1aa5f8
+  ap-southeast-1:
+    cloud_access: ami-b878ebdb
+    hourly: ami-b878ebdb
+  ap-southeast-2:
+    cloud_access: ami-d4edf4b7
+    hourly: ami-d4edf4b7
+  eu-central-1:
+    cloud_access: ami-7849e717
+    hourly: ami-7849e717
+  us-east-1:
+    cloud_access: ami-fbc89880
+    hourly: ami-fbc89880
+  us-east-2:
+    cloud_access: ami-ab5474ce
+    hourly: ami-ab5474ce
+  us-west-1:
+    cloud_access: ami-3cd1f85c
+    hourly: ami-3cd1f85c
+  us-west-2:
+    cloud_access: ami-cfa343b7
+    hourly: ami-cfa343b7

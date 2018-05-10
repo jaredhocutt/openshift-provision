@@ -1,0 +1,37 @@
+---
+
+- name: Add host facts to bastion node
+  add_host:
+    name: "{{ item }}"
+    ansible_host: "{{ hostvars[item].public_ip_address }}"
+    ansible_ssh_private_key_file: "{{ ec2_key_file }}"
+    rhsm_consumer_name: "{{ hostvars[item].tags.Name }}"
+  with_items: "{{ groups.openshift_role_bastion | intersect(groups['openshift_cluster_' + cluster_name]) }}"
+  changed_when: no
+
+- name: Add host facts to OpenShift nodes
+  add_host:
+    name: "{{ item }}"
+    ansible_host: "{{ hostvars[item].private_ip_address }}"
+    ansible_ssh_private_key_file: "{{ ec2_key_file }}"
+    ansible_ssh_common_args: >-
+      -o ProxyCommand="ssh -i {{ ec2_key_file }} -o StrictHostKeyChecking=no -W %h:%p -q ec2-user@{{ hostvars[(groups.openshift_role_bastion | intersect(groups['openshift_cluster_' + cluster_name])).0].public_ip_address }}"
+    rhsm_consumer_name: "{{ hostvars[item].tags.Name }}"
+  with_items: "{{ groups.openshift_nodes | intersect(groups['openshift_cluster_' + cluster_name]) }}"
+  changed_when: no
+
+- name: Wait for bastion to boot
+  wait_for:
+    host: "{{ hostvars[item].ansible_host }}"
+    port: 22
+    search_regex: OpenSSH
+  delegate_to: localhost
+  with_items: "{{ groups.openshift_role_bastion | intersect(groups['openshift_cluster_' + cluster_name]) }}"
+
+- name: Wait for nodes to boot
+  wait_for:
+    host: "{{ hostvars[item].ansible_host }}"
+    port: 22
+    search_regex: OpenSSH
+  delegate_to: "{{ (groups.openshift_role_bastion | intersect(groups['openshift_cluster_' + cluster_name]))[0] }}"
+  with_items: "{{ groups.openshift_nodes | intersect(groups['openshift_cluster_' + cluster_name]) }}"

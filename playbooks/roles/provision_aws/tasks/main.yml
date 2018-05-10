@@ -1,0 +1,26 @@
+---
+
+- name: Create CloudFormation stack
+  cloudformation:
+    stack_name: "{{ cluster_name }}"
+    region: "{{ aws_region }}"
+    state: present
+    template: "{{ role_path }}/files/greenfield.multi.yml"
+    template_parameters:
+      ClusterName: "{{ cluster_name }}"
+      Route53HostedZone: "{{ route53_hosted_zone }}"
+      Route53HostedZoneId: "{{ route53_hosted_zone_id }}"
+      Region: "{{ aws_region }}"
+      KeyName: "{{ ec2_key_name }}"
+      AmiId: "{{ ec2_ami_ids[aws_region][ec2_ami_type] }}"
+      BastionNodeUserData: "{{ lookup('file', 'user_data/bastion.yml') | b64encode }}"
+      MasterNodeUserData: "{{ lookup('file', 'user_data/master.yml') | b64encode }}"
+      InfraNodeUserData: "{{ lookup('file', 'user_data/infra.yml') | b64encode }}"
+      AppNodeUserData: "{{ lookup('file', 'user_data/app.yml') | b64encode }}"
+      BastionNodeInstanceType: "{{ ec2_instance_type_bastion }}"
+      MasterNodeInstanceType: "{{ ec2_instance_type_master }}"
+      InfraNodeInstanceType: "{{ ec2_instance_type_infra }}"
+      AppNodeInstanceType: "{{ ec2_instance_type_app }}"
+
+- name: Refresh inventory to update EC2 instances information
+  meta: refresh_inventory
