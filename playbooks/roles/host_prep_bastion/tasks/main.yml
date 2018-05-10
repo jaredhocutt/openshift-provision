@@ -21,4 +21,3 @@
     dest: ~/.ssh/id_rsa
     mode: 0600
     backup: yes
-  become: yes
