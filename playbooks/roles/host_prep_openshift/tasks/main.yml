@@ -1,0 +1,29 @@
+---
+
+- name: Install Docker
+  yum:
+    name: docker-1.13.1  # TODO: Make this a varible based on openshift_version
+    state: present
+  become: yes
+
+- name: Write docker-storage-setup file
+  template:
+    src: docker-storage-setup.j2
+    dest: /etc/sysconfig/docker-storage-setup
+    owner: root
+    group: root
+    mode: 0644
+  register: write_docker_storage_setup_file
+  become: yes
+
+- name: Run docker-storage-setup
+  command: docker-storage-setup
+  when: write_docker_storage_setup_file.changed
+  become: yes
+
+- name: Start and enable docker
+  service:
+    name: docker
+    enabled: yes
+    state: started
+  become: yes
