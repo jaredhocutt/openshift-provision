@@ -1,24 +1,86 @@
 # OpenShift Provisioner
 
-This project is a work in progress.
+Provision infrastructure and install OpenShift.
 
-## AWS
+The goal of this project is to support installing OpenShift across multiple
+clouds and virtualization platforms.
 
-Required variables:
-  - cluster_name
-  - aws_region
-  - route53_hosted_zone
-  - route53_hosted_zone_id
-  - ec2_key_name
-  - ec2_key_file
-  - rhsm_username
-  - rhsm_password
-  - rhsm_pool
+## Getting Started
 
-Recommended variables:
-  - ec2_ami_type
-  - openshift_version
+This project is built using Ansible playbooks, including the use of modules
+that require additional packages to be installed in order to function.
 
-Required environment variables:
-  - AWS_ACCESS_KEY_ID
-  - AWS_SECRET_ACCESS_KEY
+To make the process of installing the packages and their correct versions
+easier, this project takes advantage of [`pipenv`](1)
+
+If you do not already have [`pipenv`](1) installed:
+
+```bash
+pip install --user pipenv
+```
+
+Next, you can install all of the dependencies for this project:
+
+```bash
+pipenv install
+```
+
+Then, whenever you're ready to use this project, from the root directory of the
+project, you run the following to activate the environment:
+
+```bash
+pipenv shell
+```
+
+## Provisioners
+
+### AWS
+
+If you have not already done so, activate your `pipenv` environment:
+
+```bash
+pipenv shell
+```
+
+There are several variables that you will need to define before running the
+AWS provisioner.
+
+| Variable                 | Required           | Default  | Description                                                                                                                                      |
+| ------------------------ | ------------------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `cluster_name`           | :heavy_check_mark: |          | The name of the cluster. This value will be in your DNS entries and should conform to valid DNS characters.                                      |
+| `aws_region`             | :heavy_check_mark: |          | The AWS region (i.e. `us-east-1`)                                                                                                                |
+| `route53_hosted_zone`    | :heavy_check_mark: |          | The base subdomain to use for your cluster (i.e. if you set this to `example.com`, a DNS entry for `<cluster_name>.example.com` will be created) |
+| `route53_hosted_zone_id` | :heavy_check_mark: |          | The ID of the Route53 hosted zone (i.e. `YP563J79RELJ4C`)                                                                                        |
+| `ec2_key_name`           | :heavy_check_mark: |          | The name of your EC2 key pair (create one using the AWS web console if you do not have one)                                                      |
+| `ec2_key_file`           | :heavy_check_mark: |          | The path on your local filesystem to the private key file from your EC2 key pair                                                                 |
+| `rhsm_username`          | :heavy_check_mark: |          | Your RHSM username                                                                                                                               |
+| `rhsm_password`          | :heavy_check_mark: |          | Your RHSM password                                                                                                                               |
+| `rhsm_pool`              | :heavy_check_mark: |          | The RHSM pool ID that contains OpenShift subscriptions                                                                                           |
+| `ec2ec2_ami_type`        | :x:                | `hourly` | If you have Cloud Access setup for your account, set this to `cloud_access`                                                                      |
+| `openshift_version`      | :x:                | `3.9`    | The OpenShift version to install                                                                                                                 |
+
+For your convenience, there is an example variables file at `vars/aws.example.yml`.
+Go ahead and make a copy of this file and update the variable values. This guide will assume the file is
+located at `/var/aws.yml`.
+
+You will also need to set a few environment variables:
+
+```bash
+export AWS_ACCESS_KEY_ID=your_access_key
+export AWS_SECRET_ACCESS_KEY=your_secret_key
+```
+
+Now you're ready to provisioin an OpenShift cluster in AWS:
+
+```bash
+ansible-playbook playbooks/aws/provision.yml -e @vars/aws.yml
+```
+
+After your environment is provisioned, you can start and stop it by:
+
+```bash
+ansible-playbook playbooks/aws/start_instances.yml -e @vars/aws.yml
+ansible-playbook playbooks/aws/stop_instances.yml -e @vars/aws.yml
+```
+
+[1]: https://docs.pipenv.org/
