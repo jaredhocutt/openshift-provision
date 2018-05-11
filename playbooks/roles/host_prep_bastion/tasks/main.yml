@@ -1,5 +1,29 @@
 ---
 
+- name: Update all packages
+  yum:
+    name: "*"
+    state: latest
+  register: update_all_packages
+  become: yes
+
+- block:
+    - name: Reboot host
+      shell: sleep 5 && shutdown -r now
+      async: 300
+      poll: 0
+      become: yes
+
+    - name: Wait for nodes to boot
+      wait_for:
+        host: ""
+        port: 22
+        deploy: 30
+        timeout: 600
+        search_regex: OpenSSH
+      delegate_to: localhost
+  when: "'kernel' in update_all_packages.results"
+
 - name: Install required packages
   yum:
     name:
