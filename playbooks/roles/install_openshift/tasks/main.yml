@@ -1,0 +1,29 @@
+---
+
+- name: Copy Ansible config
+  copy:
+    src: ansible.cfg
+    dest: /etc/ansible/ansible.cfg
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+  become: yes
+
+- name: Copy hosts template
+  template:
+    src: hosts.multi.ini.j2
+    dest: /etc/ansible/hosts
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+  become: yes
+
+- name: Run OpenShift prerequisites
+  command: ansible-playbook /usr/share/ansible/openshift-ansible/playbooks/prerequisites.yml
+  tags: openshift_deploy_cluster
+
+- name: Run OpenShift installer (this will take a while!)
+  command: ansible-playbook /usr/share/ansible/openshift-ansible/playbooks/deploy_cluster.yml
+  tags: openshift_deploy_cluster

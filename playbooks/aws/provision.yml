@@ -19,3 +19,4 @@
   roles:
     - rhsm_subscribe
     - host_prep_bastion
+    - install_openshift
