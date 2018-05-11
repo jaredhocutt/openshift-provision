@@ -319,7 +319,7 @@ Resources:
           ResourceRecords:
             - !GetAtt
               - InfraNode
-              - PrivateIp
+              - PublicIp
 
   Bastion:
     Type: 'AWS::EC2::Instance'
