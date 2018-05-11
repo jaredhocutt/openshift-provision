@@ -61,7 +61,25 @@ AWS provisioner.
 
 For your convenience, there is an example variables file at `vars/aws.example.yml`.
 Go ahead and make a copy of this file and update the variable values. This guide will assume the file is
-located at `/var/aws.yml`.
+located at `/vars/aws.yml`.
+
+```yaml
+cluster_name: openshift
+openshift_version: 3.9
+
+aws_region: us-east-1
+
+ec2_ami_type: cloud_access
+ec2_key_name: myawskey
+ec2_key_file: ~/.ssh/myawskey.pem
+
+route53_hosted_zone: example.com
+route53_hosted_zone_id: YP563J79RELJ4C
+
+rhsm_username: foo@example.com
+rhsm_password: P@55w0rD
+rhsm_pool: ba4e7732f8abcdad545c7f62df736d1f
+```
 
 You will also need to set a few environment variables:
 
