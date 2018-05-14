@@ -28,7 +28,7 @@
       wait_for:
         host: ""
         port: 22
-        deploy: 30
+        delay: 30
         timeout: 600
         search_regex: OpenSSH
       delegate_to: "{{ (groups.openshift_role_bastion | intersect(groups['openshift_cluster_' + cluster_name]))[0] }}"
