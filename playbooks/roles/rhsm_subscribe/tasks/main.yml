@@ -12,7 +12,7 @@
     state: present
   become: yes
 
-- name: Enabled required repositories
+- name: Enable required repositories
   rhsm_repository:
     name: "{{ openshift_repos }}"
     state: enabled
