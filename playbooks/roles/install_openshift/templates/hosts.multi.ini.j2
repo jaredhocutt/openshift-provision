@@ -5,10 +5,10 @@
 {{ hostvars[(groups.openshift_role_master | intersect(groups['openshift_cluster_' + cluster_name])).0].private_dns_name }}
 
 [nodes]
-{{ hostvars[(groups.openshift_role_master | intersect(groups['openshift_cluster_' + cluster_name])).0].private_dns_name }} openshift_node_labels="{'role': 'master', 'node-role.kubernetes.io/master': 'true'}"
-{{ hostvars[(groups.openshift_role_infra | intersect(groups['openshift_cluster_' + cluster_name])).0].private_dns_name }} openshift_node_labels="{'role': 'infra', 'node-role.kubernetes.io/infra': 'true'}"
+{{ hostvars[(groups.openshift_role_master | intersect(groups['openshift_cluster_' + cluster_name])).0].private_dns_name }}
+{{ hostvars[(groups.openshift_role_infra | intersect(groups['openshift_cluster_' + cluster_name])).0].private_dns_name }} openshift_node_labels="{'role': 'infra'}"
 {% for app_node in (groups.openshift_role_app | intersect(groups['openshift_cluster_' + cluster_name])) %}
-{{ hostvars[app_node].private_dns_name }} openshift_node_labels="{'role': 'app', 'node-role.kubernetes.io/compute': 'true'}"
+{{ hostvars[app_node].private_dns_name }} openshift_node_labels="{'role': 'app'}"
 {% endfor %}
 
 [glusterfs]
