@@ -1,5 +1,7 @@
 ---
 
+cluster_type: multi
+
 # Use "cloud_access" if enabled for account to save on costs
 ec2_ami_type: hourly
 

@@ -1,3 +1,5 @@
 ---
 
+cluster_type: multi
+
 cns_storage_device: /dev/xvdc

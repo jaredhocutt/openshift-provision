@@ -12,7 +12,7 @@
 
 - name: Copy hosts template
   template:
-    src: hosts.multi.ini.j2
+    src: hosts.{{ cluster_type }}.ini.j2
     dest: /etc/ansible/hosts
     owner: root
     group: root

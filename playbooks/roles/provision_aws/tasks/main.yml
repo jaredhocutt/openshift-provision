@@ -5,7 +5,7 @@
     stack_name: "{{ cluster_name }}"
     region: "{{ aws_region }}"
     state: present
-    template: "{{ role_path }}/files/greenfield.multi.yml"
+    template: "{{ role_path }}/files/greenfield.{{ cluster_type }}.yml"
     template_parameters:
       ClusterName: "{{ cluster_name }}"
       Route53HostedZone: "{{ route53_hosted_zone }}"
