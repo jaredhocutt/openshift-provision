@@ -1,5 +1,12 @@
 ---
 
+- name: Update all packages
+  yum:
+    name: "*"
+    state: latest
+  register: update_all_packages
+  become: yes
+
 # There is a current bug with DNSmasq causing things to fail during an
 # OpenShift install. Installing/upgrading and then rebooting the nodes is
 # the current workaround.
@@ -10,26 +17,19 @@
   register: install_update_dnsmasq
   become: yes
 
-- name: Update all packages
-  yum:
-    name: "*"
-    state: latest
-  register: update_all_packages
-  become: yes
-
 - block:
     - name: Reboot host
       shell: sleep 5 && shutdown -r now
-      async: 300
+      async: 0
       poll: 0
       become: yes
 
     - name: Wait for nodes to boot
       wait_for:
-        host: ""
+        host: "{{ ansible_host }}"
         port: 22
         delay: 30
-        timeout: 600
+        timeout: 300
         search_regex: OpenSSH
       delegate_to: "{{ (groups.openshift_role_bastion | intersect(groups['openshift_cluster_' + cluster_name]))[0] }}"
   when: >-
