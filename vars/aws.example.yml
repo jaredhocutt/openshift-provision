@@ -1,6 +1,7 @@
 ---
 
 cluster_name: openshift
+cluster_type: multi
 openshift_version: 3.9
 
 aws_region: us-east-1

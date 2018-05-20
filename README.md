@@ -45,19 +45,20 @@ pipenv shell
 There are several variables that you will need to define before running the
 AWS provisioner.
 
-| Variable                 | Required           | Default  | Description                                                                                                                                      |
-| ------------------------ | ------------------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `cluster_name`           | :heavy_check_mark: |          | The name of the cluster. This value will be in your DNS entries and should conform to valid DNS characters.                                      |
-| `aws_region`             | :heavy_check_mark: |          | The AWS region (i.e. `us-east-1`)                                                                                                                |
-| `route53_hosted_zone`    | :heavy_check_mark: |          | The base subdomain to use for your cluster (i.e. if you set this to `example.com`, a DNS entry for `<cluster_name>.example.com` will be created) |
-| `route53_hosted_zone_id` | :heavy_check_mark: |          | The ID of the Route53 hosted zone (i.e. `YP563J79RELJ4C`)                                                                                        |
-| `ec2_key_name`           | :heavy_check_mark: |          | The name of your EC2 key pair (create one using the AWS web console if you do not have one)                                                      |
-| `ec2_key_file`           | :heavy_check_mark: |          | The path on your local filesystem to the private key file from your EC2 key pair                                                                 |
-| `rhsm_username`          | :heavy_check_mark: |          | Your RHSM username                                                                                                                               |
-| `rhsm_password`          | :heavy_check_mark: |          | Your RHSM password                                                                                                                               |
-| `rhsm_pool`              | :heavy_check_mark: |          | The RHSM pool ID that contains OpenShift subscriptions                                                                                           |
-| `ec2ec2_ami_type`        | :x:                | `hourly` | If you have Cloud Access setup for your account, set this to `cloud_access`                                                                      |
-| `openshift_version`      | :x:                | `3.9`    | The OpenShift version to install                                                                                                                 |
+| Variable                 | Required           | Default     | Description                                                                                                                                                          |
+| ------------------------ | ------------------ | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cluster_name`           | :heavy_check_mark: | `openshift` | The name of the cluster. This value will be in your DNS entries and should conform to valid DNS characters.                                                          |
+| `cluster_type`           | :heavy_check_mark: | `multi`     | The type of cluster to deploy. Valid values are:<br>`aio` = 1 node (all-in-one)<br>`multi` = 1 master, 1 infra, 2 app nodes<br>`ha` = 3 master, 3 infra, 2 app nodes |
+| `aws_region`             | :heavy_check_mark: |             | The AWS region (i.e. `us-east-1`)                                                                                                                                    |
+| `route53_hosted_zone`    | :heavy_check_mark: |             | The base subdomain to use for your cluster (i.e. if you set this to `example.com`, a DNS entry for `<cluster_name>.example.com` will be created)                     |
+| `route53_hosted_zone_id` | :heavy_check_mark: |             | The ID of the Route53 hosted zone (i.e. `YP563J79RELJ4C`)                                                                                                            |
+| `ec2_key_name`           | :heavy_check_mark: |             | The name of your EC2 key pair (create one using the AWS web console if you do not have one)                                                                          |
+| `ec2_key_file`           | :heavy_check_mark: |             | The path on your local filesystem to the private key file from your EC2 key pair                                                                                     |
+| `rhsm_username`          | :heavy_check_mark: |             | Your RHSM username                                                                                                                                                   |
+| `rhsm_password`          | :heavy_check_mark: |             | Your RHSM password                                                                                                                                                   |
+| `rhsm_pool`              | :heavy_check_mark: |             | The RHSM pool ID that contains OpenShift subscriptions                                                                                                               |
+| `ec2ec2_ami_type`        | :x:                | `hourly`    | If you have Cloud Access setup for your account, set this to `cloud_access`                                                                                          |
+| `openshift_version`      | :x:                | `3.9`       | The OpenShift version to install                                                                                                                                     |
 
 For your convenience, there is an example variables file at `vars/aws.example.yml`.
 Go ahead and make a copy of this file and update the variable values. This guide will assume the file is
@@ -65,6 +66,7 @@ located at `/vars/aws.yml`.
 
 ```yaml
 cluster_name: openshift
+cluster_type: multi
 openshift_version: 3.9
 
 aws_region: us-east-1
