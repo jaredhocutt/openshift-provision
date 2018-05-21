@@ -252,13 +252,6 @@ Resources:
           - SecurityGroupCluster
           - GroupId
 
-  BastionEip:
-    Type: AWS::EC2::EIP
-    DependsOn:
-      - Bastion
-    Properties:
-      InstanceId: !Ref Bastion
-
   MasterNodeEip:
     Type: AWS::EC2::EIP
     DependsOn:
@@ -276,8 +269,6 @@ Resources:
   Route53Records:
     Type: "AWS::Route53::RecordSetGroup"
     DependsOn:
-      - Bastion
-      - BastionEip
       - MasterNode
       - MasterNodeEip
       - InfraNode
@@ -294,18 +285,6 @@ Resources:
           ResourceRecords:
             - !GetAtt
               - MasterNode
-              - PublicIp
-
-        - Name: !Join
-            - .
-            - - bastion
-              - !Ref ClusterName
-              - !Ref Route53HostedZone
-          Type: A
-          TTL: '300'
-          ResourceRecords:
-            - !GetAtt
-              - Bastion
               - PublicIp
 
         - Name: !Join
