@@ -29,6 +29,7 @@
   yum:
     name:
       - atomic-openshift-utils
+      - docker-1.13.1
     state: present
   become: yes
 
@@ -38,6 +39,13 @@
       - vim
       - screen
     state: present
+  become: yes
+
+- name: Start and enable docker
+  service:
+    name: docker
+    enabled: yes
+    state: started
   become: yes
 
 - name: Copy EC2 key

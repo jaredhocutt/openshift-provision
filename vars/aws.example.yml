@@ -4,6 +4,8 @@ cluster_name: openshift
 cluster_type: multi
 openshift_version: 3.9
 
+cert_email_address: foo@example.com
+
 aws_region: us-east-1
 
 ec2_ami_type: cloud_access
