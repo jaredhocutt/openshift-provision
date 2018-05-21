@@ -19,9 +19,10 @@
 
 - block:
     - name: Reboot host
-      shell: sleep 5 && shutdown -r now
-      async: 0
+      shell: sleep 30 && shutdown -r now
+      async: 30
       poll: 0
+      ignore_errors: yes
       become: yes
 
     - name: Wait for nodes to boot
