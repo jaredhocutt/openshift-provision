@@ -133,6 +133,7 @@ openshift_hosted_registry_selector='role=infra'
 # Registry Storage Options
 #
 openshift_hosted_registry_storage_kind=glusterfs
+openshift_hosted_registry_storage_volume_size={{ openshift_registry_volume_size }}Gi
 
 # Metrics deployment
 # See: https://docs.openshift.com/enterprise/latest/install_config/cluster_metrics.html

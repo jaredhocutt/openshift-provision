@@ -3,3 +3,5 @@
 cluster_type: multi
 
 cns_storage_device: /dev/xvdc
+
+openshift_registry_volume_size: 20
