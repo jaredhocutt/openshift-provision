@@ -57,8 +57,8 @@ AWS provisioner.
 | `rhsm_username`          | :heavy_check_mark: |             | Your RHSM username                                                                                                                                          |
 | `rhsm_password`          | :heavy_check_mark: |             | Your RHSM password                                                                                                                                          |
 | `rhsm_pool`              | :heavy_check_mark: |             | The RHSM pool ID that contains OpenShift subscriptions                                                                                                      |
-| `ec2ec2_ami_type`        | :x:                | `hourly`    | If you have Cloud Access setup for your account, set this to `cloud_access`                                                                                 |
-| `openshift_version`      | :x:                | `3.9`       | The OpenShift version to install                                                                                                                            |
+| `ec2_ami_type`           | :heavy_check_mark: | `hourly`    | If you have Cloud Access setup for your account, set this to `cloud_access`                                                                                 |
+| `openshift_version`      | :heavy_check_mark: | `3.9`       | The OpenShift version to install                                                                                                                            |
 
 For your convenience, there is an example variables file at `vars/aws.example.yml`.
 Go ahead and make a copy of this file and update the variable values. This guide will assume the file is
