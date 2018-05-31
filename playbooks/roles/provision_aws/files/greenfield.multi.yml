@@ -6,7 +6,7 @@ Parameters:
   VpcCidrBlock:
     Type: String
     Default: "172.31.0.0/16"
-  Route53HostedZone:
+  BaseDomain:
     Type: String
   Route53HostedZoneId:
     Type: String
@@ -279,7 +279,7 @@ Resources:
         - Name: !Join
             - .
             - - !Ref ClusterName
-              - !Ref Route53HostedZone
+              - !Ref BaseDomain
           Type: A
           TTL: '300'
           ResourceRecords:
@@ -292,7 +292,7 @@ Resources:
             - - '*'
               - apps
               - !Ref ClusterName
-              - !Ref Route53HostedZone
+              - !Ref BaseDomain
           Type: A
           TTL: '300'
           ResourceRecords:

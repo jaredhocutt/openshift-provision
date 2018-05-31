@@ -50,7 +50,7 @@ AWS provisioner.
 | `cluster_name`           | :heavy_check_mark: | `openshift` | The name of the cluster.<br><br>This value will be in your DNS entries and should conform to valid DNS characters.                                          |
 | `cluster_type`           | :heavy_check_mark: | `multi`     | The type of cluster to deploy.<br><br>`aio` = 1 node (all-in-one)<br>`multi` = 1 master, 1 infra, 2 app nodes<br>`ha` = 3 master, 3 infra, 2 app nodes      |
 | `aws_region`             | :heavy_check_mark: |             | The AWS region (i.e. `us-east-1`)                                                                                                                           |
-| `route53_hosted_zone`    | :heavy_check_mark: |             | The base subdomain to use for your cluster.<br><br>Example: If you set this to `example.com`, a DNS entry for `<cluster_name>.example.com` will be created) |
+| `openshift_base_domain`  | :heavy_check_mark: |             | The base subdomain to use for your cluster.<br><br>Example: If you set this to `example.com`, a DNS entry for `<cluster_name>.example.com` will be created) |
 | `route53_hosted_zone_id` | :heavy_check_mark: |             | The ID of the Route53 hosted zone (i.e. `YP563J79RELJ4C`)                                                                                                   |
 | `ec2_key_name`           | :heavy_check_mark: |             | The name of your EC2 key pair (create one using the AWS web console if you do not have one)                                                                 |
 | `ec2_key_file`           | :heavy_check_mark: |             | The path on your local filesystem to the private key file from your EC2 key pair                                                                            |
@@ -67,7 +67,9 @@ located at `/vars/aws.yml`.
 ```yaml
 cluster_name: openshift
 cluster_type: multi
+
 openshift_version: 3.9
+openshift_base_domain: example.com
 
 aws_region: us-east-1
 
@@ -75,7 +77,6 @@ ec2_ami_type: cloud_access
 ec2_key_name: myawskey
 ec2_key_file: ~/.ssh/myawskey.pem
 
-route53_hosted_zone: example.com
 route53_hosted_zone_id: YP563J79RELJ4C
 
 rhsm_username: foo@example.com
@@ -90,7 +91,7 @@ export AWS_ACCESS_KEY_ID=your_access_key
 export AWS_SECRET_ACCESS_KEY=your_secret_key
 ```
 
-Now you're ready to provisioin an OpenShift cluster in AWS:
+Now you're ready to provision an OpenShift cluster in AWS:
 
 ```bash
 ansible-playbook playbooks/aws/provision.yml -e @vars/aws.yml

@@ -2,7 +2,9 @@
 
 cluster_name: openshift
 cluster_type: multi
+
 openshift_version: 3.9
+openshift_base_domain: example.com
 
 cert_email_address: foo@example.com
 
@@ -12,7 +14,6 @@ ec2_ami_type: cloud_access
 ec2_key_name: myawskey
 ec2_key_file: ~/.ssh/myawskey.pem
 
-route53_hosted_zone: example.com
 route53_hosted_zone_id: YP563J79RELJ4C
 
 rhsm_username: foo@example.com

@@ -8,7 +8,7 @@
     template: "{{ role_path }}/files/greenfield.{{ cluster_type }}.yml"
     template_parameters:
       ClusterName: "{{ cluster_name }}"
-      Route53HostedZone: "{{ route53_hosted_zone }}"
+      BaseDomain: "{{ openshift_base_domain }}"
       Route53HostedZoneId: "{{ route53_hosted_zone_id }}"
       Region: "{{ aws_region }}"
       KeyName: "{{ ec2_key_name }}"

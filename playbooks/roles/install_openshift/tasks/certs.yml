@@ -12,9 +12,9 @@
     --email "{{ cert_email_address }}"
     --dns-route53
     --dns-route53-propagation-seconds 30
-    --domain "{{ cluster_name }}.{{ route53_hosted_zone }}"
+    --domain "{{ cluster_name }}.{{ openshift_base_domain }}"
   args:
-    creates: /etc/letsencrypt/live/{{ cluster_name }}.{{ route53_hosted_zone }}
+    creates: /etc/letsencrypt/live/{{ cluster_name }}.{{ openshift_base_domain }}
   become: yes
 
 - name: Get wildcard SSL cert for OpenShift router
@@ -31,9 +31,9 @@
     --dns-route53
     --dns-route53-propagation-seconds 30
     --server https://acme-v02.api.letsencrypt.org/directory
-    --domain "*.apps.{{ cluster_name }}.{{ route53_hosted_zone }}"
+    --domain "*.apps.{{ cluster_name }}.{{ openshift_base_domain }}"
   args:
-    creates: /etc/letsencrypt/live/apps.{{ cluster_name }}.{{ route53_hosted_zone }}
+    creates: /etc/letsencrypt/live/apps.{{ cluster_name }}.{{ openshift_base_domain }}
   become: yes
 
 - name: Give the {{ ansible_user }} access to the certs

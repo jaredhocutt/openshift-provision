@@ -56,7 +56,7 @@ openshift_release=v3.9
 # default subdomain to use for exposed routes, you should have wildcard dns
 # for *.apps.test.example.com that points at your infra nodes which will run
 # your router
-openshift_master_default_subdomain=apps.{{ cluster_name }}.{{ route53_hosted_zone }}
+openshift_master_default_subdomain=apps.{{ cluster_name }}.{{ openshift_base_domain }}
 
 ###############################################################################
 # Additional configuration variables follow                                   #
@@ -82,7 +82,7 @@ osm_use_cockpit=true
 osm_cockpit_plugins=['cockpit-kubernetes']
 
 # If an external load balancer is used public hostname should resolve to
-openshift_master_cluster_public_hostname={{ cluster_name }}.{{ route53_hosted_zone }}
+openshift_master_cluster_public_hostname={{ cluster_name }}.{{ openshift_base_domain }}
 # external load balancer address
 
 # default project node selector
@@ -112,7 +112,7 @@ openshift_hosted_router_selector='role=infra'
 # Router certificate (optional)
 # Provide local certificate paths which will be configured as the
 # router's default certificate.
-openshift_hosted_router_certificate={"certfile": "/etc/letsencrypt/live/apps.{{ cluster_name }}.{{ route53_hosted_zone }}/cert.pem", "keyfile": "/etc/letsencrypt/live/apps.{{ cluster_name }}.{{ route53_hosted_zone }}/privkey.pem", "cafile": "/etc/letsencrypt/live/apps.{{ cluster_name }}.{{ route53_hosted_zone }}/chain.pem"}
+openshift_hosted_router_certificate={"certfile": "/etc/letsencrypt/live/apps.{{ cluster_name }}.{{ openshift_base_domain }}/cert.pem", "keyfile": "/etc/letsencrypt/live/apps.{{ cluster_name }}.{{ openshift_base_domain }}/privkey.pem", "cafile": "/etc/letsencrypt/live/apps.{{ cluster_name }}.{{ openshift_base_domain }}/chain.pem"}
 
 # Openshift Registry Options
 #
@@ -210,7 +210,7 @@ openshift_master_overwrite_named_certificates=true
 #openshift_master_named_certificates=[{"certfile": "/path/to/custom1.crt", "keyfile": "/path/to/custom1.key", "cafile": "/path/to/custom-ca1.crt"}]
 #
 # Detected names may be overridden by specifying the "names" key
-openshift_master_named_certificates=[{"certfile": "/etc/letsencrypt/live/{{ cluster_name }}.{{ route53_hosted_zone }}/fullchain.pem", "keyfile": "/etc/letsencrypt/live/{{ cluster_name }}.{{ route53_hosted_zone }}/privkey.pem", "names": ["{{ cluster_name }}.{{ route53_hosted_zone }}"]}]
+openshift_master_named_certificates=[{"certfile": "/etc/letsencrypt/live/{{ cluster_name }}.{{ openshift_base_domain }}/fullchain.pem", "keyfile": "/etc/letsencrypt/live/{{ cluster_name }}.{{ openshift_base_domain }}/privkey.pem", "names": ["{{ cluster_name }}.{{ openshift_base_domain }}"]}]
 
 # Enable service catalog
 openshift_enable_service_catalog=true
