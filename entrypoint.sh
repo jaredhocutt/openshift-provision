@@ -11,7 +11,7 @@ if [[ $USER_UID == 0 ]]; then
   echo "    --user \$(id -u \$USER)"
   echo
   echo "Example:"
-  echo "    docker run -it --rm --name openshift-provision --volume \$(pwd):/app:z openshift-provision"
+  echo "    docker run -it --rm --user \$(id -u \$USER) --volume \$(pwd):/app:z openshift-provision"
 
   exit 1
 fi
