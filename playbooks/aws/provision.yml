@@ -1,9 +1,6 @@
 ---
 
 - hosts: localhost
-  environment:
-    AWS_ACCESS_KEY_ID: "{{ aws_access_key_id }}"
-    AWS_SECRET_ACCESS_KEY: "{{ aws_secret_access_key }}"
   roles:
     - provision_aws
     - host_facts_aws
@@ -11,9 +8,6 @@
 - hosts: openshift_nodes:&openshift_cluster_{{ cluster_name }}
   vars:
     provision_type: aws
-  environment:
-    AWS_ACCESS_KEY_ID: "{{ aws_access_key_id }}"
-    AWS_SECRET_ACCESS_KEY: "{{ aws_secret_access_key }}"
   any_errors_fatal: yes
   roles:
     - rhsm_subscribe
@@ -22,9 +16,6 @@
 - hosts: openshift_role_bastion:&openshift_cluster_{{ cluster_name }}
   vars:
     provision_type: aws
-  environment:
-    AWS_ACCESS_KEY_ID: "{{ aws_access_key_id }}"
-    AWS_SECRET_ACCESS_KEY: "{{ aws_secret_access_key }}"
   any_errors_fatal: yes
   roles:
     - rhsm_subscribe
