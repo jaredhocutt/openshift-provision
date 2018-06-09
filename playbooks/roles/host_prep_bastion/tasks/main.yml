@@ -4,6 +4,8 @@
   yum:
     name: "*"
     state: latest
+  retries: 3  # This seems to fail sometimes, so lets retry before failing everything
+  until: update_all_packages.rc == 0
   register: update_all_packages
   become: yes
 
