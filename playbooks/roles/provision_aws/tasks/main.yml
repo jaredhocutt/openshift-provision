@@ -1,8 +1,33 @@
 ---
 
+- name: Create EC2 key pair
+  ec2_key:
+    name: "{{ ec2_key_name }}"
+    region: "{{ aws_region }}"
+    force: no
+    state: present
+  register: ec2_key
+
+- name: Create keys directory
+  file:
+    path: "{{ keys_dir }}"
+    state: directory
+    owner: "{{ ansible_user_uid }}"
+    group: "{{ ansible_user_gid }}"
+    mode: 0700
+
+- name: Output EC2 private key
+  copy:
+    dest: "{{ ec2_key_file }}"
+    content: "{{ ec2_key.key.private_key }}"
+    owner: "{{ ansible_user_uid }}"
+    group: "{{ ansible_user_gid }}"
+    mode: 0600
+  when: ec2_key.changed
+
 - name: Create CloudFormation stack
   cloudformation:
-    stack_name: "{{ cluster_name }}"
+    stack_name: "{{ openshift_public_hostname | replace('.', '-') }}"
     region: "{{ aws_region }}"
     state: present
     template: "{{ role_path }}/files/greenfield.{{ cluster_type }}.yml"

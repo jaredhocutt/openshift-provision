@@ -1,2 +1,7 @@
 ---
-# defaults file for host_facts_aws
+
+openshift_public_hostname: "{{ cluster_name }}.{{ openshift_base_domain }}"
+
+keys_dir: "{{ playbook_dir }}/keys"
+ec2_key_name: "{{ openshift_public_hostname | replace('.', '-') }}"
+ec2_key_file: "{{ keys_dir }}/{{ ec2_key_name }}.pem"
