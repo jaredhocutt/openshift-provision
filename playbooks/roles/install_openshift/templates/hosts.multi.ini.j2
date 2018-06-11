@@ -68,6 +68,9 @@ debug_level=2
 # Manage openshift example imagestreams and templates during install and upgrade
 openshift_install_examples=true
 
+# FIXME: https://access.redhat.com/solutions/3480921
+oreg_url_master=registry.access.redhat.com/openshift3/ose-${component}:${version}
+oreg_url_node=registry.access.redhat.com/openshift3/ose-${component}:${version}
 # htpasswd auth
 openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/htpasswd'}]
 # Defining htpasswd users
