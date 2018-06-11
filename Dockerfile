@@ -1,4 +1,4 @@
-FROM docker.io/library/fedora:27
+FROM docker.io/library/fedora:28
 
 RUN \
     dnf install -y \
@@ -6,8 +6,10 @@ RUN \
         python3 \
         python3-pip \
         python3-devel \
-        which \
-    && ln -sf /usr/bin/python3 /usr/local/bin/python \
+        which
+
+RUN \
+    ln -sf /usr/bin/python3 /usr/local/bin/python \
     && ln -sf /usr/bin/pip3 /usr/local/bin/pip \
     && pip install --upgrade pip \
     && pip install pipenv \
