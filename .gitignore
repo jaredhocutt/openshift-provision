@@ -6,6 +6,7 @@ playbooks/aws/keys
 
 vars/*
 !vars/aws.example.yml
+!vars/aws.example.env
 
 ###############################################################################
 # Python
