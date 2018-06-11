@@ -65,12 +65,25 @@ openshift_master_default_subdomain=apps.{{ openshift_public_hostname }}
 # Debug level for all OpenShift components (Defaults to 2)
 debug_level=2
 
+{% if openshift_version_minor %}
+# Specify an exact container image tag to install or configure.
+# WARNING: This value will be used for all hosts in containerized environments, even those that have another version installed.
+# This could potentially trigger an upgrade and downtime, so be careful with modifying this value after the cluster is set up.
+openshift_image_tag=v{{ openshift_version_minor }}
+
+# Specify an exact rpm version to install or configure.
+# WARNING: This value will be used for all hosts in RPM based environments, even those that have another version installed.
+# This could potentially trigger an upgrade and downtime, so be careful with modifying this value after the cluster is set up.
+openshift_pkg_version=-{{ openshift_version_minor }}
+{% endif %}
+
 # Manage openshift example imagestreams and templates during install and upgrade
 openshift_install_examples=true
 
 # FIXME: https://access.redhat.com/solutions/3480921
 oreg_url_master=registry.access.redhat.com/openshift3/ose-${component}:${version}
 oreg_url_node=registry.access.redhat.com/openshift3/ose-${component}:${version}
+
 # htpasswd auth
 openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/htpasswd'}]
 # Defining htpasswd users
