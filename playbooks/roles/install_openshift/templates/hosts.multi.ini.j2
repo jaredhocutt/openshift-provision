@@ -98,8 +98,8 @@ osm_use_cockpit=true
 osm_cockpit_plugins=['cockpit-kubernetes']
 
 # If an external load balancer is used public hostname should resolve to
-openshift_master_cluster_public_hostname={{ openshift_public_hostname }}
 # external load balancer address
+openshift_master_cluster_public_hostname={{ openshift_public_hostname }}
 
 # default project node selector
 osm_default_node_selector='role=app'
@@ -179,24 +179,6 @@ openshift_logging_es_pvc_dynamic=true
 openshift_logging_es_nodeselector={'role': 'infra'}
 openshift_logging_curator_nodeselector={'role': 'infra'}
 openshift_logging_kibana_nodeselector={'role': 'infra'}
-
-# Prometheus deployment
-#
-# Currently prometheus deployment is disabled by default, enable it by setting this
-openshift_hosted_prometheus_deploy=true
-#
-# Prometheus storage config
-openshift_prometheus_storage_type=pvc
-openshift_prometheus_storage_class=glusterfs-storage
-openshift_prometheus_alertmanager_storage_type=pvc
-openshift_prometheus_alertmanager_storage_class=glusterfs-storage
-openshift_prometheus_alertbuffer_storage_type=pvc
-openshift_prometheus_alertbuffer_storageinventory_class=glusterfs-storage
-#
-# Other Prometheus Options
-openshift_prometheus_node_selector={'role': 'infra'}
-# The default v0.15.2 doesn't exist
-openshift_prometheus_node_exporter_image_version=v3.9
 
 # Configure the multi-tenant SDN plugin (default is 'redhat/openshift-ovs-subnet')
 os_sdn_network_plugin_name='redhat/openshift-ovs-networkpolicy'
