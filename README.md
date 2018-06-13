@@ -40,10 +40,11 @@ AWS provisioner.
 | `rhsm_password`          | :heavy_check_mark: |             | Your RHSM password                                                                                                                                          |
 | `rhsm_pool`              | :heavy_check_mark: |             | The RHSM pool ID that contains OpenShift subscriptions                                                                                                      |
 
-For your convenience, there is an example variables file at `vars/aws.example.yml`.
-Go ahead and make a copy of this file and update the variable values. The contents of that file is also shown below.
+For your convenience, there is an example variables file at
+`<openshift-provision>/vars/aws.example.yml`. Go ahead and make a copy of this
+file and update the variable values. The contents of that file is also shown below.
 
-This guide will assume the file is located at `/vars/aws.yml`.
+This guide will assume the file is located at `<openshift-provision>/vars/aws.yml`.
 
 ```yaml
 ---
@@ -68,11 +69,11 @@ rhsm_pool: ba4e7732f8abcdad545c7f62df736d1f
 #### Step 2
 
 You will also need to set a few environment variables. For your convenience,
-there is an example environment file at `vars/aws.example.env`. Go ahead and
-make a copy of this file and update the environment variable values. The
+there is an example environment file at `<openshift-provision>/vars/aws.example.env`.
+Go ahead and make a copy of this file and update the environment variable values. The
 contents of that file is also shown below.
 
-This guide will assume the file is located at `/vars/aws.env`.
+This guide will assume the file is located at `<openshift-provision>/vars/aws.env`.
 
 ```
 AWS_ACCESS_KEY_ID=your_access_key
