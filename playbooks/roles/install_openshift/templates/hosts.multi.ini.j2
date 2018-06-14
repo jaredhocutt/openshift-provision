@@ -65,7 +65,7 @@ openshift_master_default_subdomain=apps.{{ openshift_public_hostname }}
 # Debug level for all OpenShift components (Defaults to 2)
 debug_level=2
 
-{% if openshift_version_minor %}
+{% if openshift_version_minor is defined %}
 # Specify an exact container image tag to install or configure.
 # WARNING: This value will be used for all hosts in containerized environments, even those that have another version installed.
 # This could potentially trigger an upgrade and downtime, so be careful with modifying this value after the cluster is set up.
