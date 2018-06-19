@@ -41,19 +41,13 @@ Parameters:
     Default: "10"
   MasterNodeRootVolSize:
     Type: String
-    Default: "45"
+    Default: "60"
   InfraNodeRootVolSize:
     Type: String
-    Default: "45"
+    Default: "60"
   AppNodeRootVolSize:
     Type: String
-    Default: "45"
-  DockerVolSize:
-    Type: String
-    Default: "20"
-  DockerVolType:
-    Type: String
-    Default: gp2
+    Default: "60"
   CnsVolSize:
     Type: String
     Default: "100"
@@ -372,11 +366,6 @@ Resources:
         - DeviceName: /dev/xvdb
           Ebs:
             DeleteOnTermination: 'true'
-            VolumeSize: !Ref DockerVolSize
-            VolumeType: !Ref DockerVolType
-        - DeviceName: /dev/xvdc
-          Ebs:
-            DeleteOnTermination: 'true'
             VolumeSize: !Ref CnsVolSize
             VolumeType: !Ref CnsVolType
 
@@ -420,11 +409,6 @@ Resources:
         - DeviceName: /dev/xvdb
           Ebs:
             DeleteOnTermination: 'true'
-            VolumeSize: !Ref DockerVolSize
-            VolumeType: !Ref DockerVolType
-        - DeviceName: /dev/xvdc
-          Ebs:
-            DeleteOnTermination: 'true'
             VolumeSize: !Ref CnsVolSize
             VolumeType: !Ref CnsVolType
 
@@ -465,11 +449,6 @@ Resources:
         - DeviceName: /dev/xvdb
           Ebs:
             DeleteOnTermination: 'true'
-            VolumeSize: !Ref DockerVolSize
-            VolumeType: !Ref DockerVolType
-        - DeviceName: /dev/xvdc
-          Ebs:
-            DeleteOnTermination: 'true'
             VolumeSize: !Ref CnsVolSize
             VolumeType: !Ref CnsVolType
 
@@ -508,11 +487,6 @@ Resources:
             VolumeSize: !Ref AppNodeRootVolSize
             VolumeType: gp2
         - DeviceName: /dev/xvdb
-          Ebs:
-            DeleteOnTermination: 'true'
-            VolumeSize: !Ref DockerVolSize
-            VolumeType: !Ref DockerVolType
-        - DeviceName: /dev/xvdc
           Ebs:
             DeleteOnTermination: 'true'
             VolumeSize: !Ref CnsVolSize
