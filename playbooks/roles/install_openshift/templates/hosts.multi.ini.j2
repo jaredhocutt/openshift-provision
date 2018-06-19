@@ -80,10 +80,6 @@ openshift_pkg_version=-{{ openshift_version_minor }}
 # Manage openshift example imagestreams and templates during install and upgrade
 openshift_install_examples=true
 
-# FIXME: https://access.redhat.com/solutions/3480921
-oreg_url=registry.access.redhat.com/openshift3/ose-${component}:${version}
-openshift_examples_modify_imagestreams=true
-
 # htpasswd auth
 openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/htpasswd'}]
 # Defining htpasswd users
@@ -216,3 +212,17 @@ openshift_enable_service_catalog=true
 # Enable template service broker (requires service catalog to be enabled, above)
 template_service_broker_install=true
 template_service_broker_selector={'role': 'infra'}
+
+###############################################################################
+# Workaround for bug in 3.9.30                                                #
+#                                                                             #
+# KB: https://access.redhat.com/solutions/3480921                             #
+# BZ: https://bugzilla.redhat.com/show_bug.cgi?id=1583500                     #
+# BZ: https://bugzilla.redhat.com/show_bug.cgi?id=1516534                     #
+###############################################################################
+
+oreg_url=registry.access.redhat.com/openshift3/ose-${component}:${version}
+openshift_storage_glusterfs_image=registry.access.redhat.com/rhgs3/rhgs-server-rhel7
+openshift_storage_glusterfs_heketi_image=/registry.access.redhat.com/rhgs3/rhgs-volmanager-rhel7
+openshift_storage_glusterfs_block_image=registry.access.redhat.com/rhgs3/rhgs-gluster-block-prov-rhel7
+openshift_examples_modify_imagestreams=true
