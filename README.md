@@ -17,18 +17,6 @@ To use the container, you will need a container runtime. I recommend using
 [podman](https://github.com/projectatomic/libpod) or
 [docker](https://www.docker.com/community-edition).
 
-### Build The Container
-
-In order to use the container image, you first need to build it on the machine
-you are going to do the install from.
-
-This is as easy as running the following command. Replace `podman` in the
-command below with `docker` if that is what you have installed on your machine instead.
-
-```bash
-sudo podman build --tag openshift-provision .
-```
-
 ## Provisioners
 
 ### AWS
@@ -100,14 +88,14 @@ Replace `podman` in the command below with `docker` if that is what you have
 installed on your machine instead.
 
 ```bash
-sudo podman run -it --rm --volume $(pwd):/app:z --env-file vars/aws.env openshift-provision ansible-playbook playbooks/aws/provision.yml -e @vars/aws.yml -v
+sudo podman run -it --rm --volume $(pwd):/app:z --env-file vars/aws.env quay.io/jhocutt/openshift-provision ansible-playbook playbooks/aws/provision.yml -e @vars/aws.yml -v
 ```
 
 After your environment is provisioned, you can start and stop it by:
 
 ```bash
 # Start cluster
-sudo podman run -it --rm --volume $(pwd):/app:z --env-file vars/aws.env openshift-provision ansible-playbook playbooks/aws/start_instances.yml -e @vars/aws.yml
+sudo podman run -it --rm --volume $(pwd):/app:z --env-file vars/aws.env quay.io/jhocutt/openshift-provision ansible-playbook playbooks/aws/start_instances.yml -e @vars/aws.yml
 # Stop cluster
-sudo podman run -it --rm --volume $(pwd):/app:z --env-file vars/aws.env openshift-provision ansible-playbook playbooks/aws/stop_instances.yml -e @vars/aws.yml
+sudo podman run -it --rm --volume $(pwd):/app:z --env-file vars/aws.env quay.io/jhocutt/openshift-provision ansible-playbook playbooks/aws/stop_instances.yml -e @vars/aws.yml
 ```
