@@ -15,6 +15,7 @@
     owner: "{{ ansible_user_uid }}"
     group: "{{ ansible_user_gid }}"
     mode: 0700
+  become: yes
 
 - name: Output EC2 private key
   copy:
@@ -24,6 +25,15 @@
     group: "{{ ansible_user_gid }}"
     mode: 0600
   when: ec2_key.changed
+
+- name: Set permissions for EC2 private key
+  file:
+    path: "{{ ec2_key_file }}"
+    state: file
+    owner: "{{ ansible_user_uid }}"
+    group: "{{ ansible_user_gid }}"
+    mode: 0600
+  become: yes
 
 - name: Create CloudFormation stack
   cloudformation:
