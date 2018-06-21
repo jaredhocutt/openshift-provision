@@ -1,0 +1,9 @@
+---
+
+- hosts: localhost
+  roles:
+    - host_facts_aws
+
+- hosts: openshift_role_master:&openshift_cluster_{{ cluster_name }}
+  roles:
+    - create_users
