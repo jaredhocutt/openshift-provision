@@ -100,14 +100,14 @@ Replace `podman` in the command below with `docker` if that is what you have
 installed on your machine instead.
 
 ```bash
-sudo podman run -it --rm --user $(id -u $USER) --volume $(pwd):/app:z --env-file vars/aws.env openshift-provision ansible-playbook playbooks/aws/provision.yml -e @vars/aws.yml -v
+sudo podman run -it --rm --volume $(pwd):/app:z --env-file vars/aws.env openshift-provision ansible-playbook playbooks/aws/provision.yml -e @vars/aws.yml -v
 ```
 
 After your environment is provisioned, you can start and stop it by:
 
 ```bash
 # Start cluster
-sudo podman run -it --rm --user $(id -u $USER) --volume $(pwd):/app:z --env-file vars/aws.env openshift-provision ansible-playbook playbooks/aws/start_instances.yml -e @vars/aws.yml
+sudo podman run -it --rm --volume $(pwd):/app:z --env-file vars/aws.env openshift-provision ansible-playbook playbooks/aws/start_instances.yml -e @vars/aws.yml
 # Stop cluster
-sudo podman run -it --rm --user $(id -u $USER) --volume $(pwd):/app:z --env-file vars/aws.env openshift-provision ansible-playbook playbooks/aws/stop_instances.yml -e @vars/aws.yml
+sudo podman run -it --rm --volume $(pwd):/app:z --env-file vars/aws.env openshift-provision ansible-playbook playbooks/aws/stop_instances.yml -e @vars/aws.yml
 ```
