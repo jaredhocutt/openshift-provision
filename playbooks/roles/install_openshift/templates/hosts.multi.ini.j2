@@ -28,7 +28,7 @@ glusterfs
 # Disable checks that are meant to catch issues early. This is an automated install that
 # also creates the infrastructure so it is assumed that things are configured correctly.
 # This will speed up the execution of the installer.
-#openshift_disable_check=memory_availability,disk_availability,docker_storage,docker_storage_driver,docker_image_availability,package_version,package_availability,package_update
+openshift_disable_check=memory_availability,disk_availability,docker_storage,docker_storage_driver,docker_image_availability,package_version,package_availability,package_update
 
 ###############################################################################
 # Common/ Required configuration variables follow                             #
@@ -105,6 +105,12 @@ osm_default_node_selector='role=app'
 openshift_storage_glusterfs_storageclass=true
 openshift_storage_glusterfs_storageclass_default=true
 
+openshift_storage_glusterfs_block_deploy=true
+openshift_storage_glusterfs_block_storageclass=true
+openshift_storage_glusterfs_block_host_vol_size=50
+
+openshift_storage_glusterfs_wipe=true
+
 # OpenShift Router Options
 #
 # An OpenShift router will be created during install if there are
@@ -155,6 +161,10 @@ openshift_metrics_install_metrics=true
 #
 # Storage Options
 openshift_metrics_cassandra_storage_type=dynamic
+openshift_metrics_cassandra_pvc_storage_class_name=glusterfs-storage-block
+# The variable name is misspelled in the 3.9 playbooks
+# https://github.com/openshift/openshift-ansible/blob/release-3.9/roles/openshift_metrics/tasks/generate_cassandra_pvcs.yaml
+openshift_metrics_cassanda_pvc_storage_class_name=glusterfs-storage-block
 #
 # Other Metrics Options -- Common items you may wish to reconfigure, for the complete
 # list of options please see roles/openshift_metrics/README.md
@@ -168,7 +178,13 @@ openshift_metrics_heapster_nodeselector={'role': 'infra'}
 openshift_logging_install_logging=true
 #
 # Logging storage config
-openshift_logging_es_pvc_dynamic=true
+openshift_logging_elasticsearch_storage_type=pvc
+openshift_logging_elasticsearch_pvc_storage_class_name=glusterfs-storage-block
+# The logging install playbook overrides openshift_logging_elasticsearch_pvc_storage_class_name
+# with the value of openshift_logging_es_pvc_storage_class_name instead of checking
+# to see if the other variable is already defined
+# https://github.com/openshift/openshift-ansible/blob/release-3.9/roles/openshift_logging/tasks/install_logging.yaml#L106
+openshift_logging_es_pvc_storage_class_name=glusterfs-storage-block
 #
 # Other Logging Options -- Common items you may wish to reconfigure, for the complete
 # list of options please see roles/openshift_logging/README.md
