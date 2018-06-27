@@ -16,6 +16,7 @@
   rhsm_repository:
     name: "{{ openshift_repos }}"
     state: enabled
+  retries: 3  # This seems to fail sometimes, so lets retry before failing everything
   register: openshift_enable_repos
   become: yes
 
@@ -26,4 +27,5 @@
       map(attribute='id') |
       difference(openshift_repos) }}"
     state: disabled
+  retries: 3  # This seems to fail sometimes, so lets retry before failing everything
   become: yes
