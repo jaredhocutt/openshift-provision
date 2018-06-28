@@ -1,0 +1,9 @@
+---
+
+- hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Teardown OpenShift environment
+      include_role:
+        name: provision_aws
+        tasks_from: teardown
