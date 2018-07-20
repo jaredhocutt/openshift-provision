@@ -1,0 +1,52 @@
+---
+
+- name: Find VPC
+  ec2_vpc_net_facts:
+    region: "{{ aws_region }}"
+    filters:
+      tag:OpenShiftClusterName: "{{ cluster_name }}"
+      tag:OpenShiftClusterNameVerbose: "{{ cluster_name_verbose }}"
+  register: ec2_find_vpc
+
+- set_fact:
+    ec2_vpc_id: "{{ ec2_find_vpc.vpcs[0].vpc_id }}"
+    ec2_vpc_dhcp_options_id: "{{ ec2_find_vpc.vpcs[0].dhcp_options_id }}"
+  when: (ec2_find_vpc.vpcs | length) > 0
+
+- name: Find subnets
+  ec2_vpc_subnet_facts:
+    region: "{{ aws_region }}"
+    filters:
+      vpc-id: "{{ ec2_vpc_id }}"
+  register: ec2_find_subnets
+  when: ec2_vpc_id is defined
+
+- name: Delete subnets
+  ec2_vpc_subnet:
+    vpc_id: "{{ ec2_vpc_id }}"
+    region: "{{ aws_region }}"
+    cidr: "{{ item.cidr_block }}"
+    state: absent
+  with_items: "{{ ec2_find_subnets.subnets }}"
+  when: ec2_find_subnets.subnets is defined
+
+- name: Delete Internet gateway
+  ec2_vpc_igw:
+    vpc_id: "{{ ec2_vpc_id }}"
+    region: "{{ aws_region }}"
+    state: absent
+  when: ec2_vpc_id is defined
+
+- name: Delete DHCP option set
+  ec2_vpc_dhcp_option:
+    dhcp_options_id: "{{ ec2_vpc_dhcp_options_id }}"
+    region: "{{ aws_region }}"
+    state: absent
+  when: ec2_vpc_dhcp_options_id is defined
+
+- name: Delete VPC
+  ec2_vpc_net:
+    name: "{{ cluster_name_verbose }}"
+    region: "{{ aws_region }}"
+    cidr_block: "{{ ec2_vpc_cidr_block }}"
+    state: absent

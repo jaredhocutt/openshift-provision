@@ -1,0 +1,82 @@
+---
+
+- name: Create bastion security group
+  ec2_group:
+    name: "{{ cluster_name_verbose }}-bastion"
+    description: "{{ cluster_name_verbose }}-bastion"
+    vpc_id: "{{ ec2_vpc_id }}"
+    region: "{{ aws_region }}"
+    rules:
+      - proto: tcp
+        cidr_ip: 0.0.0.0/0
+        ports: 22
+    tags:
+      Name: "{{ cluster_name_verbose }}-bastion"
+      OpenShiftClusterName: "{{ cluster_name }}"
+      OpenShiftClusterNameVerbose: "{{ cluster_name_verbose }}"
+    state: present
+  register: ec2_create_security_group_bastion
+
+- set_fact:
+    ec2_security_group_bastion_id: "{{ ec2_create_security_group_bastion.group_id }}"
+
+- name: Create master security group
+  ec2_group:
+    name: "{{ cluster_name_verbose }}-master"
+    description: "{{ cluster_name_verbose }}-master"
+    vpc_id: "{{ ec2_vpc_id }}"
+    region: "{{ aws_region }}"
+    rules:
+      - proto: tcp
+        cidr_ip: 0.0.0.0/0
+        ports: 443
+    tags:
+      Name: "{{ cluster_name_verbose }}-master"
+      OpenShiftClusterName: "{{ cluster_name }}"
+      OpenShiftClusterNameVerbose: "{{ cluster_name_verbose }}"
+    state: present
+  register: ec2_create_security_group_master
+
+- set_fact:
+    ec2_security_group_master_id: "{{ ec2_create_security_group_master.group_id }}"
+
+- name: Create infra security group
+  ec2_group:
+    name: "{{ cluster_name_verbose }}-infra"
+    description: "{{ cluster_name_verbose }}-infra"
+    vpc_id: "{{ ec2_vpc_id }}"
+    region: "{{ aws_region }}"
+    rules:
+      - proto: tcp
+        cidr_ip: 0.0.0.0/0
+        ports:
+          - 80
+          - 443
+    tags:
+      Name: "{{ cluster_name_verbose }}-infra"
+      OpenShiftClusterName: "{{ cluster_name }}"
+      OpenShiftClusterNameVerbose: "{{ cluster_name_verbose }}"
+    state: present
+  register: ec2_create_security_group_infra
+
+- set_fact:
+    ec2_security_group_infra_id: "{{ ec2_create_security_group_infra.group_id }}"
+
+- name: Create cluster security group
+  ec2_group:
+    name: "{{ cluster_name_verbose }}-cluster"
+    description: "{{ cluster_name_verbose }}-cluster"
+    vpc_id: "{{ ec2_vpc_id }}"
+    region: "{{ aws_region }}"
+    rules:
+      - proto: all
+        group_name: "{{ cluster_name_verbose }}-cluster"
+    tags:
+      Name: "{{ cluster_name_verbose }}-cluster"
+      OpenShiftClusterName: "{{ cluster_name }}"
+      OpenShiftClusterNameVerbose: "{{ cluster_name_verbose }}"
+    state: present
+  register: ec2_create_security_group_cluster
+
+- set_fact:
+    ec2_security_group_cluster_id: "{{ ec2_create_security_group_cluster.group_id }}"

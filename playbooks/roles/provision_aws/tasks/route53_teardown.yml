@@ -1,0 +1,42 @@
+---
+
+- name: Find Route53 hosted zone
+  route53_facts:
+    hosted_zone_id: "{{ route53_hosted_zone_id }}"
+    query: hosted_zone
+    hosted_zone_method: details
+  register: route53_find_hosted_zone
+
+- set_fact:
+    route53_hosted_zone: "{{ route53_find_hosted_zone.HostedZone.Name }}"
+
+- name: Get DNS entry for API
+  route53:
+    record: "{{ openshift_public_hostname }}"
+    hosted_zone_id: "{{ route53_hosted_zone_id }}"
+    zone: "{{ route53_hosted_zone }}"
+    type: A
+    state: get
+  register: route53_get_api_record
+
+- name: Get wildcard DNS entry for apps
+  route53:
+    record: "*.apps.{{ openshift_public_hostname }}"
+    hosted_zone_id: "{{ route53_hosted_zone_id }}"
+    zone: "{{ route53_hosted_zone }}"
+    type: A
+    state: get
+  register: route53_get_apps_wildcard_record
+
+- name: Delete DNS records
+  route53:
+    record: "{{ item.set.record }}"
+    zone: "{{ item.set.zone }}"
+    ttl: "{{ item.set.ttl }}"
+    type: "{{ item.set.type }}"
+    value: "{{ item.set.value }}"
+    state: absent
+  with_items:
+    - "{{ route53_get_api_record }}"
+    - "{{ route53_get_apps_wildcard_record }}"
+  when: item.set

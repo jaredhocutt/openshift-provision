@@ -2,10 +2,20 @@
 
 cluster_type: multi
 
+app_node_count: 2
+
 # Use "cloud_access" if enabled for account to save on costs
 ec2_ami_type: hourly
+
+ec2_vpc_cidr_block: 172.31.0.0/16
 
 ec2_instance_type_bastion: t2.medium
 ec2_instance_type_master: m4.xlarge
 ec2_instance_type_infra: m4.xlarge
 ec2_instance_type_app: m4.large
+
+ec2_volume_size_bastion_root: 10
+ec2_volume_size_master_root: 60
+ec2_volume_size_infra_root: 60
+ec2_volume_size_app_root: 60
+ec2_volume_size_cns: 100

@@ -1,21 +1,11 @@
 ---
 
-- name: Delete EC2 key pair
-  ec2_key:
-    name: "{{ ec2_key_name }}"
-    region: "{{ aws_region }}"
-    force: no
-    state: absent
-  register: ec2_key
+- import_tasks: route53_teardown.yml
 
-- name: Delete EC2 private key
-  file:
-    path: "{{ ec2_key_file }}"
-    state: absent
-  become: yes
+- import_tasks: ec2_teardown.yml
 
-- name: Delete CloudFormation stack
-  cloudformation:
-    stack_name: "{{ openshift_public_hostname | replace('.', '-') }}"
-    region: "{{ aws_region }}"
-    state: absent
+- import_tasks: security_groups_teardown.yml
+
+- import_tasks: vpc_teardown.yml
+
+- import_tasks: keypair_teardown.yml

@@ -1,5 +1,8 @@
 ---
 
+- name: Refresh inventory to update EC2 instances information
+  meta: refresh_inventory
+
 - name: Add host facts to bastion node
   add_host:
     name: "{{ item }}"

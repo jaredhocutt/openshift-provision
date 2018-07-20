@@ -1,0 +1,76 @@
+---
+
+- name: Create VPC
+  ec2_vpc_net:
+    name: "{{ cluster_name_verbose }}"
+    region: "{{ aws_region }}"
+    cidr_block: "{{ ec2_vpc_cidr_block }}"
+    dns_hostnames: yes
+    dns_support: yes
+    tags:
+      Name: "{{ cluster_name_verbose }}"
+      OpenShiftClusterName: "{{ cluster_name }}"
+      OpenShiftClusterNameVerbose: "{{ cluster_name_verbose }}"
+    state: present
+  register: ec2_create_vpc
+
+- set_fact:
+    ec2_vpc_id: "{{ ec2_create_vpc.vpc.id }}"
+
+- name: Find default route table
+  ec2_vpc_route_table_facts:
+    region: "{{ aws_region }}"
+    filters:
+      vpc-id: "{{ ec2_vpc_id }}"
+      association.main: "true"
+  register: ec2_find_default_route_table
+
+- set_fact:
+    ec2_default_route_table: "{{ ec2_find_default_route_table.route_tables[0] | default(omit) }}"
+
+- set_fact:
+    ec2_default_route_table_id: "{{ ec2_default_route_table.id | default(omit) }}"
+
+- name: Create DHCP option set
+  ec2_vpc_dhcp_option:
+    vpc_id: "{{ ec2_vpc_id }}"
+    region: "{{ aws_region }}"
+    domain_name: "{{ 'ec2.internal' if aws_region == 'us-east-1' else aws_region + '.compute.internal' }}"
+    dns_servers:
+      - AmazonProvidedDNS
+    state: present
+
+- name: Create Internet gateway
+  ec2_vpc_igw:
+    vpc_id: "{{ ec2_vpc_id }}"
+    region: "{{ aws_region }}"
+    state: present
+  register: ec2_create_igw
+
+- set_fact:
+    ec2_igw_id: "{{ ec2_create_igw.gateway_id }}"
+
+- name: Create public subnet
+  ec2_vpc_subnet:
+    vpc_id: "{{ ec2_vpc_id }}"
+    region: "{{ aws_region }}"
+    cidr: "{{ ec2_vpc_cidr_block }}"
+    map_public: yes
+    state: present
+  register: ec2_create_public_subnet
+
+- set_fact:
+    ec2_public_subnet_id: "{{ ec2_create_public_subnet.subnet.id }}"
+
+- name: Create public route table
+  ec2_vpc_route_table:
+    vpc_id: "{{ ec2_vpc_id }}"
+    route_table_id: "{{ ec2_default_route_table_id | default(omit) }}"
+    region: "{{ aws_region }}"
+    lookup: id
+    subnets:
+      - "{{ ec2_public_subnet_id }}"
+    routes:
+      - dest: 0.0.0.0/0
+        gateway_id: "{{ ec2_igw_id }}"
+    state: present

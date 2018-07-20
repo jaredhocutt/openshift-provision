@@ -1,0 +1,147 @@
+---
+
+- name: Create bastion instance
+  ec2_instance:
+    name: "{{ cluster_name_verbose }}-bastion"
+    region: "{{ aws_region }}"
+    instance_type: "{{ ec2_instance_type_bastion }}"
+    image_id: "{{ ec2_ami_ids[aws_region][ec2_ami_type] }}"
+    key_name: "{{ ec2_key_name }}"
+    user_data: "{{ lookup('file', 'user_data/bastion.yml') }}"
+    vpc_subnet_id: "{{ ec2_public_subnet_id }}"
+    security_groups:
+      - "{{ ec2_security_group_cluster_id }}"
+      - "{{ ec2_security_group_bastion_id }}"
+    volumes:
+      - device_name: /dev/sda1
+        ebs:
+          volume_type: gp2
+          volume_size: "{{ ec2_volume_size_bastion_root }}"
+          delete_on_termination: yes
+    tags:
+      Name: "{{ cluster_name_verbose }}-bastion"
+      OpenShiftClusterName: "{{ cluster_name }}"
+      OpenShiftClusterNameVerbose: "{{ cluster_name_verbose }}"
+      OpenShiftRole: bastion
+    wait: yes
+    state: started
+  register: ec2_create_bastion_instance
+
+- name: Create master instance
+  ec2_instance:
+    name: "{{ cluster_name_verbose }}-master"
+    region: "{{ aws_region }}"
+    instance_type: "{{ ec2_instance_type_master }}"
+    image_id: "{{ ec2_ami_ids[aws_region][ec2_ami_type] }}"
+    key_name: "{{ ec2_key_name }}"
+    user_data: "{{ lookup('file', 'user_data/master.yml') }}"
+    vpc_subnet_id: "{{ ec2_public_subnet_id }}"
+    security_groups:
+      - "{{ ec2_security_group_cluster_id }}"
+      - "{{ ec2_security_group_master_id }}"
+    volumes:
+      - device_name: /dev/sda1
+        ebs:
+          volume_type: gp2
+          volume_size: "{{ ec2_volume_size_master_root }}"
+          delete_on_termination: yes
+    tags:
+      Name: "{{ cluster_name_verbose }}-master"
+      OpenShiftClusterName: "{{ cluster_name }}"
+      OpenShiftClusterNameVerbose: "{{ cluster_name_verbose }}"
+      OpenShiftRole: master
+    wait: yes
+    state: started
+  register: ec2_create_master_instance
+
+- name: Create infra instance
+  ec2_instance:
+    name: "{{ cluster_name_verbose }}-infra"
+    region: "{{ aws_region }}"
+    instance_type: "{{ ec2_instance_type_infra }}"
+    image_id: "{{ ec2_ami_ids[aws_region][ec2_ami_type] }}"
+    key_name: "{{ ec2_key_name }}"
+    user_data: "{{ lookup('file', 'user_data/infra.yml') }}"
+    vpc_subnet_id: "{{ ec2_public_subnet_id }}"
+    security_groups:
+      - "{{ ec2_security_group_cluster_id }}"
+      - "{{ ec2_security_group_infra_id }}"
+    volumes:
+      - device_name: /dev/sda1
+        ebs:
+          volume_type: gp2
+          volume_size: "{{ ec2_volume_size_infra_root }}"
+          delete_on_termination: yes
+      - device_name: /dev/xvdb
+        ebs:
+          volume_type: gp2
+          volume_size: "{{ ec2_volume_size_cns }}"
+          delete_on_termination: yes
+    tags:
+      Name: "{{ cluster_name_verbose }}-infra"
+      OpenShiftClusterName: "{{ cluster_name }}"
+      OpenShiftClusterNameVerbose: "{{ cluster_name_verbose }}"
+      OpenShiftRole: infra
+    wait: yes
+    state: started
+  register: ec2_create_infra_instance
+
+- name: Create app instances
+  ec2_instance:
+    name: "{{ cluster_name_verbose }}-app{{ item }}"
+    region: "{{ aws_region }}"
+    instance_type: "{{ ec2_instance_type_app }}"
+    image_id: "{{ ec2_ami_ids[aws_region][ec2_ami_type] }}"
+    key_name: "{{ ec2_key_name }}"
+    user_data: "{{ lookup('file', 'user_data/app.yml') }}"
+    vpc_subnet_id: "{{ ec2_public_subnet_id }}"
+    security_groups:
+      - "{{ ec2_security_group_cluster_id }}"
+    volumes:
+      - device_name: /dev/sda1
+        ebs:
+          volume_type: gp2
+          volume_size: "{{ ec2_volume_size_app_root }}"
+          delete_on_termination: yes
+      - device_name: /dev/xvdb
+        ebs:
+          volume_type: gp2
+          volume_size: "{{ ec2_volume_size_cns }}"
+          delete_on_termination: yes
+    tags:
+      Name: "{{ cluster_name_verbose }}-app{{ item }}"
+      OpenShiftClusterName: "{{ cluster_name }}"
+      OpenShiftClusterNameVerbose: "{{ cluster_name_verbose }}"
+      OpenShiftRole: app
+    wait: yes
+    state: started
+  with_sequence: start=1 end={{ app_node_count }} format=%02d
+  register: ec2_create_app_instances
+
+- name: Refresh inventory to update EC2 instances information
+  meta: refresh_inventory
+
+# NOTE: The _odd_ syntax for the tags is due to needing to have
+# a variable name in the tag key.
+- name: Add Kubernetes cluster tag to instances
+  ec2_tag:
+    region: "{{ aws_region }}"
+    resource: "{{ item }}"
+    tags: "{
+      'kubernetes.io/cluster/{{ cluster_name }}': '{{ cluster_name }}'
+    }"
+    state: present
+  with_items:
+    - "{{ ec2_create_master_instance.instances | map(attribute='instance_id') | list }}"
+    - "{{ ec2_create_infra_instance.instances | map(attribute='instance_id') | list }}"
+    - "{{ ec2_create_app_instances.results | sum(attribute='instance_ids', start=[]) }}"
+
+- name: Create elastic IP for master and infra instance
+  ec2_eip:
+    device_id: "{{ item }}"
+    region: "{{ aws_region }}"
+    release_on_disassociation: yes
+    state: present
+  with_items:
+    - "{{ ec2_create_master_instance.instances | map(attribute='instance_id') | list }}"
+    - "{{ ec2_create_infra_instance.instances | map(attribute='instance_id') | list }}"
