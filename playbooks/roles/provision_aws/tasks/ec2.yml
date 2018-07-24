@@ -50,7 +50,7 @@
       OpenShiftClusterName: "{{ cluster_name }}"
       OpenShiftClusterNameVerbose: "{{ cluster_name_verbose }}"
       OpenShiftRole: master
-    wait: yes
+    wait: no
     state: started
   register: ec2_create_master_instance
 
@@ -82,7 +82,7 @@
       OpenShiftClusterName: "{{ cluster_name }}"
       OpenShiftClusterNameVerbose: "{{ cluster_name_verbose }}"
       OpenShiftRole: infra
-    wait: yes
+    wait: no
     state: started
   register: ec2_create_infra_instance
 
@@ -113,13 +113,14 @@
       OpenShiftClusterName: "{{ cluster_name }}"
       OpenShiftClusterNameVerbose: "{{ cluster_name_verbose }}"
       OpenShiftRole: app
-    wait: yes
+    wait: no
     state: started
   with_sequence: start=1 end={{ app_node_count }} format=%02d
   register: ec2_create_app_instances
 
-- name: Refresh inventory to update EC2 instances information
-  meta: refresh_inventory
+- name: Update host facts for new instances and wait for them to boot
+  include_role:
+    name: host_facts_aws
 
 # NOTE: The _odd_ syntax for the tags is due to needing to have
 # a variable name in the tag key.
