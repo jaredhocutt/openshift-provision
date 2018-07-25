@@ -99,3 +99,9 @@ sudo podman run -it --rm --volume $(pwd):/app:z --env-file vars/aws.env quay.io/
 # Stop cluster
 sudo podman run -it --rm --volume $(pwd):/app:z --env-file vars/aws.env quay.io/jhocutt/openshift-provision ansible-playbook playbooks/aws/stop_instances.yml -e @vars/aws.yml
 ```
+
+Once you no longer need your environment, you can tear it down by:
+
+```bash
+sudo podman run -it --rm --volume $(pwd):/app:z --env-file vars/aws.env quay.io/jhocutt/openshift-provision ansible-playbook playbooks/aws/teardown.yml -e @vars/aws.yml -v
+```
