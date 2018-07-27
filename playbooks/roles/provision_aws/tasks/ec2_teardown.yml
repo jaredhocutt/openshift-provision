@@ -12,6 +12,7 @@
   ec2_eip:
     device_id: "{{ item.instance_id }}"
     region: "{{ aws_region }}"
+    release_on_disassociation: yes
     state: absent
   with_items: "{{ ec2_find_instances.instances }}"
 
