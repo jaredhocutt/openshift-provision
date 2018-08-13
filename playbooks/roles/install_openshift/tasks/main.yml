@@ -1,6 +1,6 @@
 ---
 
-- include_tasks: certs.yml
+- import_tasks: certs.yml
 
 - name: Copy Ansible config
   copy:

@@ -8,6 +8,8 @@ vars/*
 !vars/aws.example.yml
 !vars/aws.example.env
 
+.vscode/
+
 ###############################################################################
 # Python
 # https://github.com/github/gitignore/blob/master/Python.gitignore
