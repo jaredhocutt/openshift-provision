@@ -29,12 +29,11 @@ AWS provisioner.
 | Variable                 | Required           | Default     | Description                                                                                                                                                 |
 | ------------------------ | ------------------ | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `cluster_name`           | :heavy_check_mark: | `openshift` | The name of the cluster.<br><br>This value will be in your DNS entries and should conform to valid DNS characters.                                          |
-| `cluster_type`           | :heavy_check_mark: | `multi`     | The type of cluster to deploy.<br><br>`aio` = 1 node (all-in-one)<br>`multi` = 1 master, 1 infra, 2 app nodes<br>`ha` = 3 master, 3 infra, 2 app nodes      |
 | `openshift_version`      | :heavy_check_mark: | `3.9`       | The OpenShift version to install                                                                                                                            |
 | `openshift_base_domain`  | :heavy_check_mark: |             | The base subdomain to use for your cluster.<br><br>Example: If you set this to `example.com`, a DNS entry for `<cluster_name>.example.com` will be created) |
 | `cert_email_address`     | :heavy_check_mark: |             | The email address to use when generating Lets Encrypt certs for the cluster.                                                                                |
 | `aws_region`             | :heavy_check_mark: |             | The AWS region (i.e. `us-east-1`)                                                                                                                           |
-| `ec2_ami_type`           | :heavy_check_mark: | `hourly`    | If you have Cloud Access setup for your account, set this to `cloud_access`                                                                                 |
+| `ec2_ami_type`           | :heavy_check_mark: | `hourly`    | If you have Cloud Access setup for your account, set this to `cloud_access`. Otherwise, set this to `hourly`.                                               |
 | `route53_hosted_zone_id` | :heavy_check_mark: |             | The ID of the Route53 hosted zone (i.e. `YP563J79RELJ4C`)                                                                                                   |
 | `rhsm_username`          | :heavy_check_mark: |             | Your RHSM username                                                                                                                                          |
 | `rhsm_password`          | :heavy_check_mark: |             | Your RHSM password                                                                                                                                          |
@@ -49,20 +48,31 @@ This guide will assume the file is located at `<openshift-provision>/vars/aws.ym
 ```yaml
 ---
 
+# The name of the cluster.
+# This value will be in your DNS entries and should conform to valid DNS characters.
 cluster_name: openshift
-cluster_type: multi
 
+# The OpenShift version to install
 openshift_version: 3.9
+# The base subdomain to use for your cluster.
+# Example: If you set this to `example.com`, a DNS entry for `<cluster_name>.example.com` will be created)
 openshift_base_domain: example.com
 
+# The email address to use when generating Lets Encrypt certs for the cluster.
 cert_email_address: foo@example.com
 
+# The AWS region (i.e. `us-east-1`)
 aws_region: us-east-1
+# If you have Cloud Access setup for your account, set this to `cloud_access`. Otherwise, set this to `hourly`.
 ec2_ami_type: cloud_access
+# The ID of the Route53 hosted zone
 route53_hosted_zone_id: YP563J79RELJ4C
 
+# Your RHSM username
 rhsm_username: foo@example.com
+# Your RHSM password
 rhsm_password: P@55w0rD
+# The RHSM pool ID that contains OpenShift subscriptions
 rhsm_pool: ba4e7732f8abcdad545c7f62df736d1f
 ```
 
