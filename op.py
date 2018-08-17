@@ -14,21 +14,15 @@ class ContainerRuntimeMissingError(Exception):
 
 
 class OpenShiftProvision(object):
-    def __init__(self, env_file, vars_file, verbosity=0):
+    def __init__(self, env_file, vars_file, dev=False, playbook_args=[]):
         self.env_file = env_file
         self.vars_file = vars_file
-        self.verbosity = verbosity
+        self.dev = dev
+        self.playbook_args = playbook_args
 
         self.container_runtime = self._container_runtime()
-        self.container_command_args = [
-            self.container_runtime,
-            'run',
-            '-it',
-            '--rm',
-            '--env-file', self.env_file,
-            '--volume', '{}:/app:z'.format(BASE_DIR),
-            'quay.io/jhocutt/openshift-provision',
-        ]
+        self.container_image = 'quay.io/jhocutt/openshift-provision'
+        self.container_command_args = self._container_command_args()
 
     def _container_runtime(self):
         for runtime in SUPPORTED_CONTAINER_RUNTIMES:
@@ -42,15 +36,42 @@ class OpenShiftProvision(object):
 
         raise ContainerRuntimeMissingError()
 
+    def _container_command_args(self):
+        cmd_args = [
+            self.container_runtime,
+            'run',
+            '-it',
+            '--rm',
+            '--env-file', self.env_file,
+            '--volume', '{}:/app_vars:z'.format(os.path.dirname(os.path.abspath(self.vars_file))),
+            '--volume', '{}:/app_keys:z'.format(os.path.join(BASE_DIR, 'keys')),
+        ]
+
+        if self.dev:
+            cmd_args = cmd_args + [
+                '--volume', '{}:/app:z'.format(BASE_DIR),
+            ]
+
+        cmd_args.append(self.container_image)
+
+        return cmd_args
+
+    def _pull_latest_container(self):
+        subprocess.call([
+            self.container_runtime,
+            'pull',
+            self.container_image,
+        ])
+
     def _run_playbook_command(self, playbook):
+        self._pull_latest_container()
+
         cmd_args = self.container_command_args + [
             'ansible-playbook',
             playbook,
-            '-e', '@{}'.format(self.vars_file),
-        ]
-
-        if self.verbosity > 0:
-            cmd_args.append('-{}'.format('v' * self.verbosity))
+            '-e', 'keys_dir=/app_keys',
+            '-e', '@/app_vars/{}'.format(os.path.basename(self.vars_file)),
+        ] + self.playbook_args
 
         subprocess.call(cmd_args)
 
@@ -88,19 +109,19 @@ if __name__ == '__main__':
                         required=True,
                         type=check_file_exists,
                         help='file of ansible variables')
-    parser.add_argument('-v', '--verbose',
-                        action='count',
-                        help='verbose mode (-vvv for more, -vvvv to enable connection debugging)')
-    args = parser.parse_args()
+    parser.add_argument('--dev',
+                        action='store_true')
+    known_args, extra_args = parser.parse_known_args()
 
     if os.geteuid() != 0:
         print('This script requires root privileges.')
         exit(1)
 
     try:
-        op = OpenShiftProvision(args.env_file,
-                                args.vars_file,
-                                args.verbose)
+        op = OpenShiftProvision(known_args.env_file,
+                                known_args.vars_file,
+                                known_args.dev,
+                                extra_args)
     except ContainerRuntimeMissingError:
         print('\n'.join([
             'You do not have a supported container runtime installed.',
@@ -111,11 +132,11 @@ if __name__ == '__main__':
             'Please install one of those options and try again.'
         ]))
 
-    if args.action == 'provision':
+    if known_args.action == 'provision':
         op.provision()
-    elif args.action == 'start':
+    elif known_args.action == 'start':
         op.start_instances()
-    elif args.action == 'stop':
+    elif known_args.action == 'stop':
         op.stop_instances()
-    elif args.action == 'teardown':
+    elif known_args.action == 'teardown':
         op.teardown()
