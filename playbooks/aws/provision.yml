@@ -21,3 +21,7 @@
     - rhsm_subscribe
     - host_prep_bastion
     - install_openshift
+
+- hosts: openshift_role_master:&openshift_cluster_{{ cluster_name }}
+  roles:
+    - create_users
