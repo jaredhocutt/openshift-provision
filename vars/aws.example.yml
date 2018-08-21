@@ -26,3 +26,15 @@ rhsm_username: foo@example.com
 rhsm_password: P@55w0rD
 # The RHSM pool ID that contains OpenShift subscriptions
 rhsm_pool: ba4e7732f8abcdad545c7f62df736d1f
+
+# The users to create in OpenShift
+openshift_users:
+  - username: admin
+    password: password
+    admin: yes
+  - username: user1
+    password: password
+  - username: user2
+    password: password
+  - username: user3
+    password: password

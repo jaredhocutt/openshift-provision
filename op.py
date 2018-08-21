@@ -44,7 +44,7 @@ class OpenShiftProvision(object):
             '--rm',
             '--env-file', self.env_file,
             '--volume', '{}:/app_vars:z'.format(os.path.dirname(os.path.abspath(self.vars_file))),
-            '--volume', '{}:/app_keys:z'.format(os.path.join(BASE_DIR, 'keys')),
+            '--volume', '{}:/app_keys:z'.format(os.path.join(BASE_DIR, 'playbooks', 'aws', 'keys')),
         ]
 
         if self.dev:
@@ -87,6 +87,9 @@ class OpenShiftProvision(object):
     def teardown(self):
         self._run_playbook_command('playbooks/aws/teardown.yml')
 
+    def create_users(self):
+        self._run_playbook_command('playbooks/aws/create_users.yml')
+
 
 def check_file_exists(value):
     if not os.path.isfile(value):
@@ -100,7 +103,8 @@ if __name__ == '__main__':
                         choices=['provision',
                                  'start',
                                  'stop',
-                                 'teardown',])
+                                 'teardown',
+                                 'create_users',])
     parser.add_argument('--env-file',
                         required=True,
                         type=check_file_exists,
@@ -140,3 +144,5 @@ if __name__ == '__main__':
         op.stop_instances()
     elif known_args.action == 'teardown':
         op.teardown()
+    elif known_args.action == 'create_users':
+        op.create_users()

@@ -74,6 +74,18 @@ rhsm_username: foo@example.com
 rhsm_password: P@55w0rD
 # The RHSM pool ID that contains OpenShift subscriptions
 rhsm_pool: ba4e7732f8abcdad545c7f62df736d1f
+
+# The users to create in OpenShift
+openshift_users:
+  - username: admin
+    password: password
+    admin: yes
+  - username: user1
+    password: password
+  - username: user2
+    password: password
+  - username: user3
+    password: password
 ```
 
 #### Step 2
@@ -105,6 +117,12 @@ After your environment is provisioned, you can start and stop it by:
 sudo ./op.py --env-file vars/aws.env --vars-file vars/aws.yml start
 # Stop cluster
 sudo ./op.py --env-file vars/aws.env --vars-file vars/aws.yml stop
+```
+
+If you need to add or update users in OpenShift:
+
+```bash
+sudo ./op.py --env-file vars/aws.env --vars-file vars/aws.yml create_users
 ```
 
 Once you no longer need your environment, you can tear it down by:
