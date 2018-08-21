@@ -142,6 +142,8 @@
     device_id: "{{ item }}"
     region: "{{ aws_region }}"
     state: present
+    in_vpc: yes
   with_items:
     - "{{ ec2_create_master_instance.instances | map(attribute='instance_id') | list }}"
     - "{{ ec2_create_infra_instance.instances | map(attribute='instance_id') | list }}"
+    
