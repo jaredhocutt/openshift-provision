@@ -17,6 +17,33 @@ To use the container, you will need a container runtime. I recommend using
 [podman](https://github.com/projectatomic/libpod) or
 [docker](https://www.docker.com/community-edition).
 
+## Known Issues
+
+### Issue: Docker for Mac does not work
+
+Running this tool using Docker for Mac does not work. During the OpenShift
+installation portion, which is a long running process, the Ansible SSH
+connection will drop and not recover.
+
+This does not happen when running from a Linux machine. Therefore, the
+current workaround is to use a Linux VM (either on your Mac or running
+in AWS) and execute this tool from that Linux VM.
+
+This issue will exhibit itself with an error that looks similar to the following:
+
+```bash
+TASK [install_openshift : Run OpenShift installer (this will take a while!)] **
+Friday 17 August 2018 21:26:08 +0000 (0:02:35.555) 0:26:59.634 *********
+fatal: [ec2-18-232-178-150.compute-1.amazonaws.com]: UNREACHABLE! => {
+"changed": false,
+"unreachable": true
+}
+
+MSG:
+
+Failed to connect to the host via ssh: Shared connection to 18.232.178.150 closed.
+```
+
 ## Provisioners
 
 ### AWS
