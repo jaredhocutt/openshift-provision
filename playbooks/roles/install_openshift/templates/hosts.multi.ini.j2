@@ -159,10 +159,6 @@ openshift_metrics_install_metrics=true
 #
 # Storage Options
 openshift_metrics_cassandra_storage_type=dynamic
-openshift_metrics_cassandra_pvc_storage_class_name=glusterfs-storage-block
-# The variable name is misspelled in the 3.9 playbooks
-# https://github.com/openshift/openshift-ansible/blob/release-3.9/roles/openshift_metrics/tasks/generate_cassandra_pvcs.yaml
-openshift_metrics_cassanda_pvc_storage_class_name=glusterfs-storage-block
 #
 # Other Metrics Options -- Common items you may wish to reconfigure, for the complete
 # list of options please see roles/openshift_metrics/README.md
@@ -177,12 +173,6 @@ openshift_logging_install_logging=true
 #
 # Logging storage config
 openshift_logging_elasticsearch_storage_type=pvc
-openshift_logging_elasticsearch_pvc_storage_class_name=glusterfs-storage-block
-# The logging install playbook overrides openshift_logging_elasticsearch_pvc_storage_class_name
-# with the value of openshift_logging_es_pvc_storage_class_name instead of checking
-# to see if the other variable is already defined
-# https://github.com/openshift/openshift-ansible/blob/release-3.9/roles/openshift_logging/tasks/install_logging.yaml#L106
-openshift_logging_es_pvc_storage_class_name=glusterfs-storage-block
 #
 # Other Logging Options -- Common items you may wish to reconfigure, for the complete
 # list of options please see roles/openshift_logging/README.md
