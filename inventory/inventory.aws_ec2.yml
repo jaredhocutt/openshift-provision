@@ -12,7 +12,7 @@ keyed_groups:
   - prefix: openshift_role
     key: tags.OpenShiftRole
   - prefix: openshift_cluster
-    key: tags.OpenShiftClusterName
+    key: tags.OpenShiftClusterNameVerbose
 
 groups:
   openshift_nodes:

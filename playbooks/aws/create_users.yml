@@ -4,6 +4,6 @@
   roles:
     - host_facts_aws
 
-- hosts: openshift_role_master:&openshift_cluster_{{ cluster_name }}
+- hosts: openshift_role_master:&openshift_cluster_{{ hostvars.localhost.cluster_group_name }}
   roles:
     - create_users

@@ -9,3 +9,8 @@ all:
     aws_ec2:
       vars:
         ansible_user: ec2-user
+        provision_type: aws
+  vars:
+    openshift_public_hostname: "{{ cluster_name }}.{{ openshift_base_domain }}"
+    cluster_name_verbose: "{{ openshift_public_hostname | replace('.', '-') }}"
+    cluster_group_name: "{{ cluster_name_verbose | replace('-', '_') }}"
