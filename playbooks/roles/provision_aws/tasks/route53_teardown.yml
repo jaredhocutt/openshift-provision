@@ -10,6 +10,15 @@
 - set_fact:
     route53_hosted_zone: "{{ route53_find_hosted_zone.HostedZone.Name }}"
 
+- name: Get DNS entry for bastion
+  route53:
+    record: "bastion.{{ openshift_public_hostname }}"
+    hosted_zone_id: "{{ route53_hosted_zone_id }}"
+    zone: "{{ route53_hosted_zone }}"
+    type: A
+    state: get
+  register: route53_get_bastion_record
+
 - name: Get DNS entry for API
   route53:
     record: "{{ openshift_public_hostname }}"
@@ -37,6 +46,7 @@
     value: "{{ item.set.value }}"
     state: absent
   with_items:
+    - "{{ route53_get_bastion_record }}"
     - "{{ route53_get_api_record }}"
     - "{{ route53_get_apps_wildcard_record }}"
   when: item.set
