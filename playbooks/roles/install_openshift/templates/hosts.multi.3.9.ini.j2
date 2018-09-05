@@ -90,11 +90,11 @@ openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 
 # Cloud Provider Configuration
 #
 # AWS
-openshift_cloudprovider_kind=aws
+#openshift_cloudprovider_kind=aws
 # Note: IAM profiles may be used instead of storing API credentials on disk.
-openshift_cloudprovider_aws_access_key="{{ lookup('env','AWS_ACCESS_KEY_ID') }}"
-openshift_cloudprovider_aws_secret_key="{{ lookup('env','AWS_SECRET_ACCESS_KEY') }}"
-openshift_clusterid="{{ cluster_name_verbose }}"
+#openshift_cloudprovider_aws_access_key="{{ lookup('env','AWS_ACCESS_KEY_ID') }}"
+#openshift_cloudprovider_aws_secret_key="{{ lookup('env','AWS_SECRET_ACCESS_KEY') }}"
+#openshift_clusterid="{{ cluster_name_verbose }}"
 
 # Enable cockpit
 osm_use_cockpit=true
