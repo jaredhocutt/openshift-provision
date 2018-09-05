@@ -1,0 +1,227 @@
+[masters]
+{{ hostvars[(groups.openshift_role_master | intersect(groups['openshift_cluster_' + cluster_group_name])).0].private_dns_name }}
+
+[etcd]
+{{ hostvars[(groups.openshift_role_master | intersect(groups['openshift_cluster_' + cluster_group_name])).0].private_dns_name }}
+
+[nodes]
+{{ hostvars[(groups.openshift_role_master | intersect(groups['openshift_cluster_' + cluster_group_name])).0].private_dns_name }} openshift_node_group_name='node-config-master'
+{{ hostvars[(groups.openshift_role_infra | intersect(groups['openshift_cluster_' + cluster_group_name])).0].private_dns_name }} openshift_node_group_name='node-config-infra'
+{% for app_node in (groups.openshift_role_app | intersect(groups['openshift_cluster_' + cluster_group_name])) %}
+{{ hostvars[app_node].private_dns_name }} openshift_node_group_name='node-config-compute'
+{% endfor %}
+
+[glusterfs]
+#{{ hostvars[(groups.openshift_role_infra | intersect(groups['openshift_cluster_' + cluster_group_name])).0].private_dns_name }} glusterfs_devices='[ "{{ cns_storage_device }}" ]'
+{% for app_node in (groups.openshift_role_app | intersect(groups['openshift_cluster_' + cluster_group_name])) %}
+#{{ hostvars[app_node].private_dns_name }} glusterfs_devices='[ "{{ cns_storage_device }}" ]'
+{% endfor %}
+
+# Create an OSEv3 group that contains the masters and nodes groups
+[OSEv3:children]
+masters
+nodes
+etcd
+#glusterfs
+
+[OSEv3:vars]
+# Disable checks that are meant to catch issues early. This is an automated install that
+# also creates the infrastructure so it is assumed that things are configured correctly.
+# This will speed up the execution of the installer.
+openshift_disable_check=memory_availability,disk_availability,docker_storage,docker_storage_driver,docker_image_availability,package_version,package_availability,package_update
+
+###############################################################################
+# Common/ Required configuration variables follow                             #
+###############################################################################
+# SSH user, this user should allow ssh based auth without requiring a
+# password. If using ssh key based auth, then the key should be managed by an
+# ssh agent.
+ansible_user=ec2-user
+
+# If ansible_user is not root, ansible_become must be set to true and the
+# user must be configured for passwordless sudo
+ansible_become=yes
+
+# Specify the deployment type. Valid values are origin and openshift-enterprise.
+#openshift_deployment_type=origin
+openshift_deployment_type=openshift-enterprise
+
+# Specify the generic release of OpenShift to install. This is used mainly just during installation, after which we
+# rely on the version running on the first master. Works best for containerized installs where we can usually
+# use this to lookup the latest exact version of the container images, which is the tag actually used to configure
+# the cluster. For RPM installations we just verify the version detected in your configured repos matches this
+# release.
+openshift_release="{{ openshift_version }}"
+
+# default subdomain to use for exposed routes, you should have wildcard dns
+# for *.apps.test.example.com that points at your infra nodes which will run
+# your router
+openshift_master_default_subdomain=apps.{{ openshift_public_hostname }}
+
+###############################################################################
+# Additional configuration variables follow                                   #
+###############################################################################
+
+# Debug level for all OpenShift components (Defaults to 2)
+debug_level=2
+
+{% if openshift_version_minor is defined %}
+# Specify an exact container image tag to install or configure.
+# WARNING: This value will be used for all hosts in containerized environments, even those that have another version installed.
+# This could potentially trigger an upgrade and downtime, so be careful with modifying this value after the cluster is set up.
+openshift_image_tag=v{{ openshift_version_minor }}
+
+# Specify an exact rpm version to install or configure.
+# WARNING: This value will be used for all hosts in RPM based environments, even those that have another version installed.
+# This could potentially trigger an upgrade and downtime, so be careful with modifying this value after the cluster is set up.
+openshift_pkg_version=-{{ openshift_version_minor }}
+{% endif %}
+
+# Manage openshift example imagestreams and templates during install and upgrade
+openshift_install_examples=true
+
+# htpasswd auth
+openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider'}]
+# Defining htpasswd users
+#openshift_master_htpasswd_users={'user1': '<pre-hashed password>', 'user2': '<pre-hashed password>'}
+# or
+#openshift_master_htpasswd_file=<path to local pre-generated htpasswd file>
+
+# Cloud Provider Configuration
+#
+# AWS
+openshift_cloudprovider_kind=aws
+# Note: IAM profiles may be used instead of storing API credentials on disk.
+openshift_cloudprovider_aws_access_key="{{ lookup('env','AWS_ACCESS_KEY_ID') }}"
+openshift_cloudprovider_aws_secret_key="{{ lookup('env','AWS_SECRET_ACCESS_KEY') }}"
+openshift_clusterid="{{ cluster_name_verbose }}"
+
+# Enable cockpit
+osm_use_cockpit=true
+#
+# Set cockpit plugins
+osm_cockpit_plugins=['cockpit-kubernetes']
+
+# If an external load balancer is used public hostname should resolve to
+# external load balancer address
+openshift_master_cluster_public_hostname={{ openshift_public_hostname }}
+
+# default project node selector
+osm_default_node_selector='node-role.kubernetes.io/compute=true'
+
+# OpenShift Storage Options
+#
+#openshift_storage_glusterfs_storageclass=true
+#openshift_storage_glusterfs_storageclass_default=true
+
+# OpenShift Router Options
+#
+# An OpenShift router will be created during install if there are
+# nodes present with labels matching the default router selector,
+# "region=infra". Set openshift_node_labels per node as needed in
+# order to label nodes.
+#
+# Example:
+# [nodes]
+# node.example.com openshift_node_labels="{'region': 'infra'}"
+#
+# Router selector (optional)
+# Router will only be created if nodes matching this label are present.
+# Default value: 'region=infra'
+openshift_hosted_router_selector='node-role.kubernetes.io/infra=true'
+#
+# Router certificate (optional)
+# Provide local certificate paths which will be configured as the
+# router's default certificate.
+openshift_hosted_router_certificate={"certfile": "/etc/letsencrypt/live/apps.{{ openshift_public_hostname }}/cert.pem", "keyfile": "/etc/letsencrypt/live/apps.{{ openshift_public_hostname }}/privkey.pem", "cafile": "/etc/letsencrypt/live/apps.{{ openshift_public_hostname }}/chain.pem"}
+
+# Openshift Registry Options
+#
+# An OpenShift registry will be created during install if there are
+# nodes present with labels matching the default registry selector,
+# "region=infra". Set openshift_node_labels per node as needed in
+# order to label nodes.
+#
+# Example:
+# [nodes]
+# node.example.com openshift_node_labels="{'region': 'infra'}"
+#
+# Registry selector (optional)
+# Registry will only be created if nodes matching this label are present.
+# Default value: 'region=infra'
+openshift_hosted_registry_selector='node-role.kubernetes.io/infra=true'
+
+# Registry Storage Options
+#
+#openshift_hosted_registry_storage_kind=glusterfs
+openshift_hosted_registry_storage_volume_size={{ openshift_registry_volume_size }}Gi
+
+# Metrics deployment
+# See: https://docs.openshift.com/enterprise/latest/install_config/cluster_metrics.html
+#
+# By default metrics are not automatically deployed, set this to enable them
+openshift_metrics_install_metrics=true
+#
+# Storage Options
+openshift_metrics_cassandra_storage_type=dynamic
+#
+# Other Metrics Options -- Common items you may wish to reconfigure, for the complete
+# list of options please see roles/openshift_metrics/README.md
+openshift_metrics_cassandra_nodeselector={'node-role.kubernetes.io/infra': 'true'}
+openshift_metrics_hawkular_nodeselector={'node-role.kubernetes.io/infra': 'true'}
+openshift_metrics_heapster_nodeselector={'node-role.kubernetes.io/infra': 'true'}
+
+# Logging deployment
+#
+# Currently logging deployment is disabled by default, enable it by setting this
+openshift_logging_install_logging=true
+#
+# Logging storage config
+openshift_logging_elasticsearch_storage_type=pvc
+#
+# Other Logging Options -- Common items you may wish to reconfigure, for the complete
+# list of options please see roles/openshift_logging/README.md
+openshift_logging_es_nodeselector={'node-role.kubernetes.io/infra': 'true'}
+openshift_logging_curator_nodeselector={'node-role.kubernetes.io/infra': 'true'}
+openshift_logging_kibana_nodeselector={'node-role.kubernetes.io/infra': 'true'}
+
+# Configure the multi-tenant SDN plugin (default is 'redhat/openshift-ovs-subnet')
+os_sdn_network_plugin_name='redhat/openshift-ovs-networkpolicy'
+
+# Configure master API and console ports.
+openshift_master_api_port=443
+openshift_master_console_port=443
+
+# Configure custom named certificates (SNI certificates)
+#
+# https://docs.openshift.org/latest/install_config/certificate_customization.html
+# https://docs.openshift.com/enterprise/latest/install_config/certificate_customization.html
+#
+# NOTE: openshift_master_named_certificates is cached on masters and is an
+# additive fact, meaning that each run with a different set of certificates
+# will add the newly provided certificates to the cached set of certificates.
+#
+# An optional CA may be specified for each named certificate. CAs will
+# be added to the OpenShift CA bundle which allows for the named
+# certificate to be served for internal cluster communication.
+#
+# If you would like openshift_master_named_certificates to be overwritten with
+# the provided value, specify openshift_master_overwrite_named_certificates.
+openshift_master_overwrite_named_certificates=true
+#
+# Provide local certificate paths which will be deployed to masters
+#openshift_master_named_certificates=[{"certfile": "/path/to/custom1.crt", "keyfile": "/path/to/custom1.key", "cafile": "/path/to/custom-ca1.crt"}]
+#
+# Detected names may be overridden by specifying the "names" key
+openshift_master_named_certificates=[{"certfile": "/etc/letsencrypt/live/{{ openshift_public_hostname }}/fullchain.pem", "keyfile": "/etc/letsencrypt/live/{{ openshift_public_hostname }}/privkey.pem", "names": ["{{ openshift_public_hostname }}"]}]
+
+# Enable service catalog
+openshift_enable_service_catalog=true
+
+# Enable template service broker (requires service catalog to be enabled, above)
+template_service_broker_install=true
+template_service_broker_selector={'node-role.kubernetes.io/infra': 'true'}
+
+# Enable ansible service broker
+ansible_service_broker_install=true
+ansible_service_broker_node_selector={'node-role.kubernetes.io/infra': 'true'}
