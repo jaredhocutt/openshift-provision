@@ -14,7 +14,7 @@
 
 - name: Copy hosts template
   template:
-    src: hosts.{{ cluster_type }}.ini.j2
+    src: hosts.{{ cluster_type }}.{{ openshift_version }}.ini.j2
     dest: /etc/ansible/hosts
     owner: root
     group: root

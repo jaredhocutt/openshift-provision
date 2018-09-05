@@ -87,6 +87,15 @@ openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 
 # or
 #openshift_master_htpasswd_file=<path to local pre-generated htpasswd file>
 
+# Cloud Provider Configuration
+#
+# AWS
+openshift_cloudprovider_kind=aws
+# Note: IAM profiles may be used instead of storing API credentials on disk.
+openshift_cloudprovider_aws_access_key="{{ lookup('env','AWS_ACCESS_KEY_ID') }}"
+openshift_cloudprovider_aws_secret_key="{{ lookup('env','AWS_SECRET_ACCESS_KEY') }}"
+openshift_clusterid="{{ cluster_name_verbose }}"
+
 # Enable cockpit
 osm_use_cockpit=true
 #
@@ -104,10 +113,6 @@ osm_default_node_selector='role=app'
 #
 openshift_storage_glusterfs_storageclass=true
 openshift_storage_glusterfs_storageclass_default=true
-
-openshift_storage_glusterfs_block_deploy=true
-openshift_storage_glusterfs_block_storageclass=true
-openshift_storage_glusterfs_block_host_vol_size={{ cns_block_host_volume_size }}
 
 # OpenShift Router Options
 #
