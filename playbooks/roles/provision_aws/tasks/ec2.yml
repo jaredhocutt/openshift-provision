@@ -129,7 +129,7 @@
     region: "{{ aws_region }}"
     resource: "{{ item }}"
     tags: "{
-      'kubernetes.io/cluster/{{ cluster_name }}': '{{ cluster_name }}'
+      'kubernetes.io/cluster/{{ cluster_name_verbose }}': '{{ cluster_name_verbose }}'
     }"
     state: present
   with_items:

@@ -1,14 +1,5 @@
 ---
 
-- name: Update all packages
-  yum:
-    name: "*"
-    state: latest
-  retries: 3  # This seems to fail sometimes, so lets retry before failing everything
-  until: update_all_packages.rc == 0
-  register: update_all_packages
-  become: yes
-
 # There is a current bug with DNSmasq causing things to fail during an
 # OpenShift install. Installing/upgrading and then rebooting the nodes is
 # the current workaround.
@@ -35,9 +26,7 @@
         timeout: 300
         search_regex: OpenSSH
       delegate_to: "{{ (groups.openshift_role_bastion | intersect(groups['openshift_cluster_' + cluster_group_name]))[0] }}"
-  when: >-
-    install_update_dnsmasq.changed
-    or 'kernel' in update_all_packages.results
+  when: install_update_dnsmasq.changed
 
 - name: Install Docker
   yum:

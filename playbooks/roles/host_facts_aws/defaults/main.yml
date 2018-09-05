@@ -6,5 +6,5 @@ cluster_name_verbose: "{{ openshift_public_hostname | replace('.', '-') }}"
 cluster_group_name: "{{ cluster_name_verbose | replace('-', '_') }}"
 
 keys_dir: "{{ playbook_dir }}/keys"
-ec2_key_name: "{{ openshift_public_hostname | replace('.', '-') }}"
+ec2_key_name: "{{ cluster_name_verbose }}"
 ec2_key_file: "{{ keys_dir }}/{{ ec2_key_name }}.pem"

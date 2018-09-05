@@ -1,46 +1,21 @@
 ---
 
-- name: Update all packages
-  yum:
-    name: "*"
-    state: latest
-  retries: 3  # This seems to fail sometimes, so lets retry before failing everything
-  until: update_all_packages.rc == 0
-  register: update_all_packages
-  become: yes
-
-- block:
-    - name: Reboot host
-      shell: sleep 30 && shutdown -r now
-      async: 30
-      poll: 0
-      ignore_errors: yes
-      become: yes
-
-    - name: Wait for nodes to boot
-      wait_for:
-        host: "{{ ansible_host }}"
-        port: 22
-        delay: 30
-        timeout: 300
-        search_regex: OpenSSH
-      delegate_to: localhost
-  when: "'kernel' in update_all_packages.results"
-
-- name: Install required packages
+- name: Install required packages (3.9)
   yum:
     name:
       - atomic-openshift-utils
       - docker-1.13.1
     state: present
+  when: openshift_version == "3.9"
   become: yes
 
-- name: Install preferred packages
+- name: Install required packages (3.10)
   yum:
     name:
-      - vim
-      - screen
+      - openshift-ansible
+      - docker-1.13.1
     state: present
+  when: openshift_version == "3.10"
   become: yes
 
 - name: Start and enable docker
