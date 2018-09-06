@@ -13,12 +13,15 @@ RUN \
     && ln -sf /usr/bin/pip3 /usr/local/bin/pip \
     && pip install --upgrade pip \
     && pip install pipenv \
-    && dnf clean all
+    && dnf clean all \
+    && mkdir -p /app
 
-COPY . /app
 WORKDIR /app
 
+COPY Pipfile /app/Pipfile
+COPY Pipfile.lock /app/Pipfile.lock
 RUN pipenv install --system --deploy
 
-VOLUME /app
+COPY . /app
+
 ENTRYPOINT ["/app/entrypoint.sh"]
