@@ -10,6 +10,7 @@ pylint = "<2.0.0"
 ansible = "*"
 boto = "*"
 "boto3" = "*"
+ovirt-engine-sdk-python = "*"
 
 [requires]
 python_version = "3.6"
