@@ -1,7 +1,5 @@
 ---
 
-openshift_version: "3.10"
-
 openshift_repos:
   - rhel-7-server-rpms
   - rhel-7-server-extras-rpms
