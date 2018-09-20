@@ -21,4 +21,5 @@
     region: "{{ aws_region }}"
     filters:
       tag:OpenShiftClusterName: "{{ cluster_name }}"
+      tag:OpenShiftClusterNameVerbose: "{{ cluster_name_verbose }}"
     state: absent
