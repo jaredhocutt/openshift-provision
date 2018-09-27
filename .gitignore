@@ -2,7 +2,8 @@
 # Project
 ###############################################################################
 
-playbooks/aws/keys
+playbooks/aws/keys/*
+!playbooks/aws/keys/.gitkeep
 
 vars/*
 !vars/aws.example.yml
