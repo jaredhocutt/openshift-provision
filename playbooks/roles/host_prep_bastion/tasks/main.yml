@@ -18,6 +18,15 @@
   when: (openshift_version | string) == "3.10"
   become: yes
 
+- name: Install required packages (3.11)
+  yum:
+    name:
+      - openshift-ansible
+      - docker-1.13.1
+    state: present
+  when: (openshift_version | string) == "3.11"
+  become: yes
+
 - name: Start and enable docker
   service:
     name: docker
