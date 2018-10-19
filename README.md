@@ -214,3 +214,9 @@ Once you no longer need your environment, you can tear it down by:
 ```bash
 sudo ./op.py --env-file vars/aws.env --vars-file vars/aws.yml teardown
 ```
+
+## Modifying the playbooks
+By default this tool uses the released versions of the repo playbooks. If you want to tweak anything locally and have the `op.py` script uses those changes you can. Be sure to pass `--dev` on the command line for those local changes to be used.
+
+For more info please see the [CONTRIBUTING.md](./CONTRIBUTING.md) guidelines
+
