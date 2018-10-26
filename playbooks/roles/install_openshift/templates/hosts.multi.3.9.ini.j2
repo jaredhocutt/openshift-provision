@@ -188,7 +188,7 @@ openshift_logging_curator_nodeselector={'role': 'infra'}
 openshift_logging_kibana_nodeselector={'role': 'infra'}
 
 # Configure the multi-tenant SDN plugin (default is 'redhat/openshift-ovs-subnet')
-os_sdn_network_plugin_name='redhat/openshift-ovs-networkpolicy'
+os_sdn_network_plugin_name='{{ openshift_network_plugin }}'
 
 # Configure master API and console ports.
 openshift_master_api_port=443
