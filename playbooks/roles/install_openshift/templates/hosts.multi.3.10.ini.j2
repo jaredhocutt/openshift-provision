@@ -214,7 +214,7 @@ openshift_prometheus_alertbuffer_storage_class=glusterfs-storage-block
 openshift_prometheus_alertbuffer_pvc_size=10Gi
 
 # Configure the multi-tenant SDN plugin (default is 'redhat/openshift-ovs-subnet')
- os_sdn_network_plugin_name='redhat/openshift-ovs-networkpolicy'
+ os_sdn_network_plugin_name='{{ openshift_network_plugin }}'
 
 # Configure master API and console ports.
 openshift_master_api_port=443
