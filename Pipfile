@@ -7,7 +7,7 @@ name = "pypi"
 pylint = "<2.0.0"
 
 [packages]
-ansible = "*"
+ansible = "==2.6.6"
 boto = "*"
 "boto3" = "*"
 ovirt-engine-sdk-python = "*"
