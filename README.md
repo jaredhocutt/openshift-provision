@@ -167,6 +167,15 @@ your OpenShift cluster would be accessible at `ocp.mydomain.com`.
 
 #### Manage
 
+There is a helper script to make it easy to run this provisioner. It is the
+`op.py` script.
+
+You will see how to use `op.py` in the following subsections.
+
+**Note:** For most actions of `op.py`, it will first try to pull the latest
+version of the bundled provisioner. If you are on a slow connection (i.e. hotel wifi)
+and want to skip this, pass the `--no-update` option.
+
 ##### Start / Stop
 
 After your environment is provisioned, it's likely you'll want to shut it down

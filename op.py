@@ -14,9 +14,10 @@ class ContainerRuntimeMissingError(Exception):
 
 
 class OpenShiftProvision(object):
-    def __init__(self, env_file, vars_file, dev=False, playbook_args=[]):
+    def __init__(self, env_file, vars_file, no_update=False, dev=False, playbook_args=[]):
         self.env_file = env_file
         self.vars_file = vars_file
+        self.no_update = no_update
         self.dev = dev
         self.playbook_args = playbook_args
 
@@ -57,6 +58,9 @@ class OpenShiftProvision(object):
         return cmd_args
 
     def _pull_latest_container(self):
+        if self.no_update:
+            print('Skipping image update.')
+            return
         subprocess.call([
             self.container_runtime,
             'pull',
@@ -113,6 +117,8 @@ if __name__ == '__main__':
                         required=True,
                         type=check_file_exists,
                         help='file of ansible variables')
+    parser.add_argument('--no-update',
+                        action='store_true')
     parser.add_argument('--dev',
                         action='store_true')
     known_args, extra_args = parser.parse_known_args()
@@ -124,6 +130,7 @@ if __name__ == '__main__':
     try:
         op = OpenShiftProvision(known_args.env_file,
                                 known_args.vars_file,
+                                known_args.no_update,
                                 known_args.dev,
                                 extra_args)
     except ContainerRuntimeMissingError:
