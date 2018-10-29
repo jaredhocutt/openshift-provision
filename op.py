@@ -61,6 +61,7 @@ class OpenShiftProvision(object):
         if self.no_update:
             print('Skipping image update.')
             return
+
         subprocess.call([
             self.container_runtime,
             'pull',
@@ -94,6 +95,36 @@ class OpenShiftProvision(object):
     def create_users(self):
         self._run_playbook_command('playbooks/aws/create_users.yml')
 
+    def shell(self):
+        self._pull_latest_container()
+        subprocess.call(self.container_command_args + ['bash',])
+
+    def ssh(self):
+        import yaml
+
+        with open(self.vars_file, 'r') as f:
+            vars_data = yaml.load(f)
+
+        bastion_hostname = 'bastion.{}.{}'.format(
+            vars_data['cluster_name'],
+            vars_data['openshift_base_domain']
+        )
+        keypair_filename = '/app/playbooks/aws/keys/{}-{}.pem'.format(
+            vars_data['cluster_name'],
+            vars_data['openshift_base_domain'].replace('.', '-')
+        )
+
+        self._pull_latest_container()
+
+        cmd_args = self.container_command_args + [
+            'ssh',
+            '-i', keypair_filename,
+            '-o', 'StrictHostKeyChecking=no',
+            'ec2-user@{}'.format(bastion_hostname),
+        ] + self.playbook_args
+
+        subprocess.call(cmd_args)
+
 
 def check_file_exists(value):
     if not os.path.isfile(value):
@@ -108,7 +139,9 @@ if __name__ == '__main__':
                                  'start',
                                  'stop',
                                  'teardown',
-                                 'create_users',])
+                                 'create_users',
+                                 'shell',
+                                 'ssh',])
     parser.add_argument('--env-file',
                         required=True,
                         type=check_file_exists,
@@ -153,3 +186,7 @@ if __name__ == '__main__':
         op.teardown()
     elif known_args.action == 'create_users':
         op.create_users()
+    elif known_args.action == 'shell':
+        op.shell()
+    elif known_args.action == 'ssh':
+        op.ssh()
