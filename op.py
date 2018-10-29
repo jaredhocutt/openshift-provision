@@ -23,6 +23,7 @@ class OpenShiftProvision(object):
 
         self.container_runtime = self._container_runtime()
         self.container_image = 'quay.io/jhocutt/openshift-provision'
+        self.keys_dir = self._keys_dir()
         self.container_command_args = self._container_command_args()
 
     def _container_runtime(self):
@@ -37,6 +38,14 @@ class OpenShiftProvision(object):
 
         raise ContainerRuntimeMissingError()
 
+    def _keys_dir(self):
+        keys_dir = os.path.join(BASE_DIR, 'playbooks', 'aws', 'keys')
+
+        if not os.path.exists(keys_dir):
+            os.mkdir(keys_dir)
+
+        return keys_dir
+
     def _container_command_args(self):
         cmd_args = [
             self.container_runtime,
@@ -45,7 +54,7 @@ class OpenShiftProvision(object):
             '--rm',
             '--env-file', self.env_file,
             '--volume', '{}:/app_vars:z'.format(os.path.dirname(os.path.abspath(self.vars_file))),
-            '--volume', '{}:/app_keys:z'.format(os.path.join(BASE_DIR, 'playbooks', 'aws', 'keys')),
+            '--volume', '{}:/app_keys:z'.format(os.path.join(BASE_DIR, self.keys_dir)),
         ]
 
         if self.dev:
