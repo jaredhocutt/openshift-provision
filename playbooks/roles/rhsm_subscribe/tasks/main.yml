@@ -12,12 +12,8 @@
     state: present
   become: yes
 
-- name: Set Ansible version for required repos (default)
-  set_fact: 
-    ansible_repo_version: "2.4"
-
 - name: Set Ansible version for required repos (OCP 3.11)
-  set_fact: 
+  set_fact:
     ansible_repo_version: "2.6"
   when: (openshift_version | string) == "3.11"
 
