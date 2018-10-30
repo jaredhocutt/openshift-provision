@@ -18,4 +18,4 @@ ec2_volume_size_bastion_root: 10
 ec2_volume_size_master_root: 60
 ec2_volume_size_infra_root: 60
 ec2_volume_size_app_root: 60
-ec2_volume_size_cns: 100
+ec2_volume_size_cns: 150
