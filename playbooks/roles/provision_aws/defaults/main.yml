@@ -20,31 +20,31 @@ ec2_ami_ids:
     cloud_access: ami-e81cfa8f
     hourly: ami-7c1bfd1b
   eu-west-1:
-    cloud_access: ami-b8404b52
+    cloud_access: ami-7776200e
     hourly: ami-7c491f05
   ap-northeast-2:
     cloud_access: ami-c213bfac
     hourly: ami-3eee4150
   ap-northeast-1:
-    cloud_access: ami-339c4e4c
+    cloud_access: ami-2a0f5d4c
     hourly: ami-6b0d5f0d
   sa-east-1:
-    cloud_access: ami-93b693ff
+    cloud_access: ami-4cb2e620
     hourly: ami-b0b7e3dc
   ca-central-1:
-    cloud_access: ami-41bf3d25
+    cloud_access: ami-09f3756d
     hourly: ami-49f0762d
   ap-southeast-1:
-    cloud_access: ami-c6aba7ba
+    cloud_access: ami-5a134c26
     hourly: ami-76144b0a
   ap-southeast-2:
-    cloud_access: ami-6d5f870f
+    cloud_access: ami-3d5e935f
     hourly: ami-67589505
   eu-central-1:
     cloud_access: ami-526d3eb9
     hourly: ami-c86c3f23
   us-east-1:
-    cloud_access: ami-6408521b
+    cloud_access: ami-0d70a070
     hourly: ami-6871a115
   us-east-2:
     cloud_access: ami-8f2617ea
@@ -55,3 +55,4 @@ ec2_ami_ids:
   us-west-2:
     cloud_access: ami-c6e27cbe
     hourly: ami-28e07e50
+    
