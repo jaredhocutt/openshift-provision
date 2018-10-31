@@ -1,24 +1,38 @@
-# Contribution guidelines
+# Contribution Guidelines
 
-So you want to hack on this? Awesome!
+## Did you find a bug?
 
-The general flow is as follows:
-## 1 Fork this repo
+- **Ensure the bug was not already reported** by searching on GitHub
+  under [Issues](https://github.com/jaredhocutt/openshift-provision/issues).
 
-It's is a simple two-step process.
+- If you're unable to find an open issue addressing the problem,
+  [open a new one](https://github.com/jaredhocutt/openshift-provision/issues/new).
 
-1. On GitHub, navigate to the https://github.com/jaredhocutt/openshift-provision
+  Be sure to include a **title and clear description**, as much relevant
+  information as possible.
 
-2. In the top-right corner of the page, click **Fork**.
+## Did you write a patch that fixes a bug?
 
-## 2 Create a local clone of your fork
+- Open a new GitHub pull request with the patch.
 
-## 3 Make changes in your fork
-Please keep changes and commits focused on a particular update or feature addition. For example don't add version 4.x support for AWS and also fix a bug in the Azure provisioing with the same commits/PR.
+- Ensure the PR description clearly describes the problem and solution.
+  Include the relevant issue number if applicable.
 
-## 4 Test your changes
+## Do you intend to add a new feature or change an existing one?
 
-## 5 Submit a PR from your fork to the master branch
+- Open a [new GitHub issue](https://github.com/jaredhocutt/openshift-provision/issues/new)
+  describing the new feature or change to an existing one.
 
+- Add the **enhancement** label to the issue.
 
-*Please check back here occasionally as might be adding more specific tips on working in this repo*
+- Write your code and test it.
+
+- Open a new GitHub pull request with the new feature.
+
+- Ensure the PR description clearly describes the changes made.
+  Include the relevant issue number.
+
+## Thanks!
+
+This OpenShift provision project is a volunteer effort. We welcome any
+help in making this project better!
