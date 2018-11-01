@@ -17,6 +17,14 @@ To use the container, you will need a container runtime. I recommend using
 [podman](https://github.com/projectatomic/libpod) or
 [docker](https://www.docker.com/community-edition).
 
+Start by cloning this repo:
+
+```bash
+git clone https://github.com/jaredhocutt/openshift-provision.git
+
+cd openshift-provision/
+```
+
 ## Known Issues
 
 ### Issue: Docker for Mac does not work
@@ -222,7 +230,8 @@ Once you no longer need your environment, you can tear it down by:
 sudo ./op.py --env-file vars/aws.env --vars-file vars/aws.yml teardown
 ```
 
-## Modifying the playbooks
+## Modifying The Playbooks
+
 By default this tool uses the released versions of the repo playbooks. If you want to tweak anything locally and have the `op.py` script uses those changes you can. Be sure to pass `--dev` on the command line for those local changes to be used.
 
 For more info please see the [CONTRIBUTING.md](./CONTRIBUTING.md) guidelines
