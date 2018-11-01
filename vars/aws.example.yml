@@ -28,6 +28,11 @@ rhsm_password: P@55w0rD
 # The RHSM pool ID that contains OpenShift subscriptions
 rhsm_pool: ba4e7732f8abcdad545c7f62df736d1f
 
+# Your Red Hat registry username
+redhat_registry_username: 1234567|foo
+# Your Red Hat registry password/token
+redhat_registry_password: 0535VZW0qDK3fBjFwJE93emjk8fmzNBLJ2XHN8TNrAsxmaqDOOz2G
+
 # The users to create in OpenShift
 openshift_users:
   - username: admin

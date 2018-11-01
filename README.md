@@ -67,6 +67,8 @@ AWS provisioner.
 | `rhsm_username`                  | :heavy_check_mark: |                                      | Your RHSM username                                                                                                                                                                              |
 | `rhsm_password`                  | :heavy_check_mark: |                                      | Your RHSM password                                                                                                                                                                              |
 | `rhsm_pool`                      | :heavy_check_mark: |                                      | The RHSM pool ID that contains OpenShift subscriptions                                                                                                                                          |
+| `redhat_registry_username`       | :heavy_check_mark: |                                      | Your Red Hat registry username. This will default to `rhsm_username` if not specified.<br>To create a registry service account, go to https://access.redhat.com/terms-based-registry/.          |
+| `redhat_registry_password`       | :heavy_check_mark: |                                      | Your Red Hat registry password/token. This will default to `rhsm_password` if not specified.<br>To create a registry service account, go to https://access.redhat.com/terms-based-registry/.    |
 | `openshift_users`                |                    | `[]`                                 | A list of users to create in the OpenShift cluster.<br><br>Each item in the list should include `username`, `password`, and optionally `admin`. See the example vars file below for an example. |
 | `app_node_count`                 |                    | `2`                                  | The number of app nodes to provision                                                                                                                                                            |
 | `ec2_vpc_cidr_block`             |                    | `172.31.0.0/16`                      | The CIDR block for the VPC                                                                                                                                                                      |
@@ -96,7 +98,7 @@ cluster_name: openshift
 
 # The OpenShift version to install
 # IMPORTANT: Make sure this value is quoted, otherwise it gets read as 3.1 instead of 3.10
-openshift_version: "3.10"
+openshift_version: "3.11"
 # The base subdomain to use for your cluster.
 # Example: If you set this to `example.com`, a DNS entry for `<cluster_name>.example.com` will be created)
 openshift_base_domain: example.com
@@ -117,6 +119,11 @@ rhsm_username: foo@example.com
 rhsm_password: P@55w0rD
 # The RHSM pool ID that contains OpenShift subscriptions
 rhsm_pool: ba4e7732f8abcdad545c7f62df736d1f
+
+# Your Red Hat registry username
+redhat_registry_username: 1234567|foo
+# Your Red Hat registry password/token
+redhat_registry_password: 0535VZW0qDK3fBjFwJE93emjk8fmzNBLJ2XHN8TNrAsxmaqDOOz2G
 
 # The users to create in OpenShift
 openshift_users:
