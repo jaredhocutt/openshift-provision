@@ -118,7 +118,7 @@ class OpenShiftProvision(object):
             vars_data['cluster_name'],
             vars_data['openshift_base_domain']
         )
-        keypair_filename = '/app/playbooks/aws/keys/{}-{}.pem'.format(
+        keypair_filename = '/app_keys/{}-{}.pem'.format(
             vars_data['cluster_name'],
             vars_data['openshift_base_domain'].replace('.', '-')
         )
