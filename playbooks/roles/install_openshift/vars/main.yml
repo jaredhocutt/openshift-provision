@@ -2,6 +2,8 @@
 
 cluster_type: multi
 
+app_node_count: 2
+
 cns_storage_device: /dev/xvdb
 cns_block_host_volume_size: 50
 
