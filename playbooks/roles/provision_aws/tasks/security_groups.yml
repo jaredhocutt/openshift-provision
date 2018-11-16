@@ -1,9 +1,9 @@
 ---
 
-- name: Create bastion security group
+- name: Create SSH security group
   ec2_group:
-    name: "{{ cluster_name_verbose }}-bastion"
-    description: "{{ cluster_name_verbose }}-bastion"
+    name: "{{ cluster_name_verbose }}-ssh"
+    description: "{{ cluster_name_verbose }}-ssh"
     vpc_id: "{{ ec2_vpc_id }}"
     region: "{{ aws_region }}"
     rules:
@@ -11,14 +11,11 @@
         cidr_ip: 0.0.0.0/0
         ports: 22
     tags:
-      Name: "{{ cluster_name_verbose }}-bastion"
+      Name: "{{ cluster_name_verbose }}-ssh"
       OpenShiftClusterName: "{{ cluster_name }}"
       OpenShiftClusterNameVerbose: "{{ cluster_name_verbose }}"
     state: present
-  register: ec2_create_security_group_bastion
-
-- set_fact:
-    ec2_security_group_bastion_id: "{{ ec2_create_security_group_bastion.group_id }}"
+  register: ec2_create_security_group_ssh
 
 - name: Create master security group
   ec2_group:
@@ -36,9 +33,6 @@
       OpenShiftClusterNameVerbose: "{{ cluster_name_verbose }}"
     state: present
   register: ec2_create_security_group_master
-
-- set_fact:
-    ec2_security_group_master_id: "{{ ec2_create_security_group_master.group_id }}"
 
 - name: Create infra security group
   ec2_group:
@@ -59,9 +53,6 @@
     state: present
   register: ec2_create_security_group_infra
 
-- set_fact:
-    ec2_security_group_infra_id: "{{ ec2_create_security_group_infra.group_id }}"
-
 - name: Create cluster security group
   ec2_group:
     name: "{{ cluster_name_verbose }}-cluster"
@@ -77,6 +68,3 @@
       OpenShiftClusterNameVerbose: "{{ cluster_name_verbose }}"
     state: present
   register: ec2_create_security_group_cluster
-
-- set_fact:
-    ec2_security_group_cluster_id: "{{ ec2_create_security_group_cluster.group_id }}"

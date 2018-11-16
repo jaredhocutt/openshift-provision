@@ -1,32 +1,5 @@
 ---
 
-- name: Create bastion instance
-  ec2_instance:
-    name: "{{ cluster_name_verbose }}-bastion"
-    region: "{{ aws_region }}"
-    instance_type: "{{ ec2_instance_type_bastion }}"
-    image_id: "{{ ec2_ami_ids[aws_region][ec2_ami_type] }}"
-    key_name: "{{ ec2_key_name }}"
-    user_data: "{{ lookup('file', 'user_data/bastion.yml') }}"
-    vpc_subnet_id: "{{ ec2_public_subnet_id }}"
-    security_groups:
-      - "{{ ec2_security_group_cluster_id }}"
-      - "{{ ec2_security_group_bastion_id }}"
-    volumes:
-      - device_name: /dev/sda1
-        ebs:
-          volume_type: gp2
-          volume_size: "{{ ec2_volume_size_bastion_root }}"
-          delete_on_termination: yes
-    tags:
-      Name: "{{ cluster_name_verbose }}-bastion"
-      OpenShiftClusterName: "{{ cluster_name }}"
-      OpenShiftClusterNameVerbose: "{{ cluster_name_verbose }}"
-      OpenShiftRole: bastion
-    wait: yes
-    state: started
-  register: ec2_create_bastion_instance
-
 - name: Create master instance
   ec2_instance:
     name: "{{ cluster_name_verbose }}-master"
@@ -37,8 +10,9 @@
     user_data: "{{ lookup('file', 'user_data/master.yml') }}"
     vpc_subnet_id: "{{ ec2_public_subnet_id }}"
     security_groups:
-      - "{{ ec2_security_group_cluster_id }}"
-      - "{{ ec2_security_group_master_id }}"
+      - "{{ ec2_create_security_group_ssh.group_id }}"
+      - "{{ ec2_create_security_group_cluster.group_id }}"
+      - "{{ ec2_create_security_group_master.group_id }}"
     volumes:
       - device_name: /dev/sda1
         ebs:
@@ -50,6 +24,7 @@
       OpenShiftClusterName: "{{ cluster_name }}"
       OpenShiftClusterNameVerbose: "{{ cluster_name_verbose }}"
       OpenShiftRole: master
+      OpenShiftBastion: "true"
     wait: no
     state: started
   register: ec2_create_master_instance
@@ -64,8 +39,9 @@
     user_data: "{{ lookup('file', 'user_data/infra.yml') }}"
     vpc_subnet_id: "{{ ec2_public_subnet_id }}"
     security_groups:
-      - "{{ ec2_security_group_cluster_id }}"
-      - "{{ ec2_security_group_infra_id }}"
+      - "{{ ec2_create_security_group_ssh.group_id }}"
+      - "{{ ec2_create_security_group_cluster.group_id }}"
+      - "{{ ec2_create_security_group_infra.group_id }}"
     volumes:
       - device_name: /dev/sda1
         ebs:
@@ -96,7 +72,8 @@
     user_data: "{{ lookup('file', 'user_data/app.yml') }}"
     vpc_subnet_id: "{{ ec2_public_subnet_id }}"
     security_groups:
-      - "{{ ec2_security_group_cluster_id }}"
+      - "{{ ec2_create_security_group_ssh.group_id }}"
+      - "{{ ec2_create_security_group_cluster.group_id }}"
     volumes:
       - device_name: /dev/sda1
         ebs:
@@ -144,6 +121,5 @@
     state: present
     in_vpc: yes
   with_items:
-    - "{{ ec2_create_bastion_instance.instances | map(attribute='instance_id') | list }}"
     - "{{ ec2_create_master_instance.instances | map(attribute='instance_id') | list }}"
     - "{{ ec2_create_infra_instance.instances | map(attribute='instance_id') | list }}"

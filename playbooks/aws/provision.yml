@@ -16,7 +16,7 @@
   roles:
     - host_prep_openshift
 
-- hosts: openshift_role_bastion:&openshift_cluster_{{ hostvars.localhost.cluster_group_name }}
+- hosts: openshift_bastion:&openshift_cluster_{{ hostvars.localhost.cluster_group_name }}
   any_errors_fatal: yes
   roles:
     - host_prep_bastion
