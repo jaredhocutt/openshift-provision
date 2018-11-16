@@ -25,7 +25,7 @@
         delay: 30
         timeout: 300
         search_regex: OpenSSH
-      delegate_to: "{{ (groups.openshift_role_bastion | intersect(groups['openshift_cluster_' + cluster_group_name]))[0] }}"
+      delegate_to: localhost
   when: install_update_dnsmasq.changed
 
 - name: Install Docker

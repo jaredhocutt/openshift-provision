@@ -10,6 +10,7 @@
     pool_ids: "{{ rhsm_pool }}"
     consumer_name: "{{ rhsm_consumer_name | default(omit) }}"
     state: present
+  retries: 3  # This seems to fail sometimes, so lets retry before failing everything
   become: yes
 
 - name: Set Ansible version for required repos (OCP 3.11)

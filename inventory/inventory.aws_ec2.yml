@@ -2,6 +2,8 @@
 
 plugin: aws_ec2
 
+strict_permissions:  no
+
 regions:
   - us-east-1
   - us-east-2
@@ -16,3 +18,5 @@ keyed_groups:
 groups:
   openshift_nodes:
     tags.OpenShiftRole in ['master', 'infra', 'app']
+  openshift_bastion:
+    tags.OpenShiftBastion == 'true'

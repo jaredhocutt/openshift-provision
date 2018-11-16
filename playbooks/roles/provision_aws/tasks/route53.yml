@@ -20,7 +20,7 @@
     zone: "{{ route53_hosted_zone }}"
     type: A
     ttl: 300
-    value: "{{ hostvars[(groups.openshift_role_bastion | intersect(groups['openshift_cluster_' + cluster_group_name]) | first)].public_ip_address }}"
+    value: "{{ hostvars[(groups.openshift_role_master | intersect(groups['openshift_cluster_' + cluster_group_name]) | first)].public_ip_address }}"
     state: present
 
 - name: Create DNS entry for API
