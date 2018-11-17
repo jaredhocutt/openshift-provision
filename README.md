@@ -212,6 +212,14 @@ sudo ./op.py --env-file vars/aws.env --vars-file vars/aws.yml start
 sudo ./op.py --env-file vars/aws.env --vars-file vars/aws.yml stop
 ```
 
+##### SSH
+
+If you need to SSH into the bastion/master, you can do that by:
+
+```bash
+sudo ./op.py --env-file vars/aws.env --vars-file vars/aws.yml ssh
+```
+
 ##### Create / Update Users
 
 If you need to add or update users in OpenShift:
