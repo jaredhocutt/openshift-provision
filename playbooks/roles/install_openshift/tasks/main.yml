@@ -1,6 +1,7 @@
 ---
 
 - import_tasks: certs.yml
+  when: letsencrypt_cert_generation
 
 - name: Copy Ansible config
   copy:

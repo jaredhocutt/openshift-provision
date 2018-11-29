@@ -126,11 +126,13 @@ openshift_storage_glusterfs_block_host_vol_size=15
 # Router will only be created if nodes matching this label are present.
 # Default value: 'node-role.kubernetes.io/infra=true'
 openshift_hosted_router_selector='node-role.kubernetes.io/infra=true'
-#
+
+{% if letsencrypt_cert_generation %}
 # Router certificate (optional)
 # Provide local certificate paths which will be configured as the
 # router's default certificate.
 openshift_hosted_router_certificate={"certfile": "/etc/letsencrypt/live/apps.{{ openshift_public_hostname }}/cert.pem", "keyfile": "/etc/letsencrypt/live/apps.{{ openshift_public_hostname }}/privkey.pem", "cafile": "/etc/letsencrypt/live/apps.{{ openshift_public_hostname }}/chain.pem"}
+{% endif %}
 
 # Openshift Registry Options
 #
@@ -222,6 +224,7 @@ openshift_prometheus_alertbuffer_pvc_size=10Gi
 openshift_master_api_port=443
 openshift_master_console_port=443
 
+{% if letsencrypt_cert_generation %}
 # Configure custom named certificates (SNI certificates)
 #
 # https://docs.openshift.org/latest/install_config/certificate_customization.html
@@ -244,6 +247,7 @@ openshift_master_overwrite_named_certificates=true
 #
 # Detected names may be overridden by specifying the "names" key
 openshift_master_named_certificates=[{"certfile": "/etc/letsencrypt/live/{{ openshift_public_hostname }}/fullchain.pem", "keyfile": "/etc/letsencrypt/live/{{ openshift_public_hostname }}/privkey.pem", "names": ["{{ openshift_public_hostname }}"]}]
+{% endif %}
 
 # Enable service catalog
 openshift_enable_service_catalog=true
