@@ -12,9 +12,7 @@
 {% endfor %}
 
 [glusterfs]
-{% if app_node_count < 3 %}
 {{ hostvars[(groups.openshift_role_infra | intersect(groups['openshift_cluster_' + cluster_group_name])).0].private_dns_name }} glusterfs_devices='[ "{{ cns_storage_device }}" ]'
-{% endif %}
 {% for app_node in (groups.openshift_role_app | intersect(groups['openshift_cluster_' + cluster_group_name])) %}
 {{ hostvars[app_node].private_dns_name }} glusterfs_devices='[ "{{ cns_storage_device }}" ]'
 {% endfor %}
