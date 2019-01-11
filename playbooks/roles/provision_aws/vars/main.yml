@@ -2,6 +2,8 @@
 
 cluster_type: multi
 
+master_node_count: 1
+infra_node_count: 1
 app_node_count: 2
 
 # Use "cloud_access" if enabled for account to save on costs
