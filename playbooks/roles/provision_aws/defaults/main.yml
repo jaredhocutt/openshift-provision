@@ -55,4 +55,4 @@ ec2_ami_ids:
   us-west-2:
     cloud_access: ami-c6e27cbe
     hourly: ami-28e07e50
-    
+
