@@ -91,6 +91,7 @@ AWS provisioner.
 | `openshift_registry_volume_size` |                    | `20`                                 | The volume size (in GB) to provision for the integration OpenShift registry                                                                                                                                                   |
 | `openshift_network_plugin`       |                    | `redhat/openshift-ovs-networkpolicy` | The network plugin to configure. Available options are:<br>`redhat/openshift-ovs-subnet`<br>`redhat/openshift-ovs-multitenant`<br>`redhat/openshift-ovs-networkpolicy`                                                        |
 | `letsencrypt_cert_generation`    |                    | `yes`                                | If you want LetsEncrypt certs generated for the cluster, leave this defaulted to `yes`. Otherwise set to `no`. This feature was originally added to work around hitting LetEncrypt limits and being able to work around them. |
+| `openshift_ssh_password`         |                    |                                      | By default, SSH password auth for the deployed hosts is disabled. If you'd like to enable SSH password auth, set this to the password you'd like to be set for the default user.                                              |
 
 For your convenience, there is an example variables file at
 `<openshift-provision>/vars/aws.example.yml`. Go ahead and make a copy of this

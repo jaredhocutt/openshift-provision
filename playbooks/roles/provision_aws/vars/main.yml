@@ -17,3 +17,5 @@ ec2_volume_size_master_root: 60
 ec2_volume_size_infra_root: 60
 ec2_volume_size_app_root: 60
 ec2_volume_size_cns: 150
+
+openshift_ssh_password: no

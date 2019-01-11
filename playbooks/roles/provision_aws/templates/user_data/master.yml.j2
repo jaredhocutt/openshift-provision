@@ -1,0 +1,16 @@
+#cloud-config
+users:
+- default
+
+system_info:
+  default_user:
+    name: ec2-user
+
+{% if openshift_ssh_password %}
+ssh_pwauth: True
+
+chpasswd:
+  list: |
+    ec2-user:{{ openshift_ssh_password }}
+  expire: false
+{% endif %}
