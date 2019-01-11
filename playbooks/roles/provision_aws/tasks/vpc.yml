@@ -44,6 +44,8 @@
   ec2_vpc_igw:
     vpc_id: "{{ ec2_vpc_id }}"
     region: "{{ aws_region }}"
+    tags:
+        Name: "{{ cluster_name_verbose }}"
     state: present
   register: ec2_create_igw
 
@@ -56,6 +58,8 @@
     region: "{{ aws_region }}"
     cidr: "{{ ec2_vpc_cidr_block }}"
     map_public: yes
+    tags:
+        Name: "{{ cluster_name_verbose }}-public"
     state: present
   register: ec2_create_public_subnet
 
