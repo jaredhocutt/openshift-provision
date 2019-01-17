@@ -1,30 +1,51 @@
 ---
 
-- name: Install required packages (3.9)
+- name: Install docker
+  yum:
+    name:
+      - docker-1.13.1
+    state: present
+  when: (openshift_version | string) in ["3.9", "3.10", "3.11"]
+  become: yes
+
+- name: Install OpenShift playbooks (3.9)
   yum:
     name:
       - atomic-openshift-utils
-      - docker-1.13.1
     state: present
-  when: (openshift_version | string) == "3.9"
+  when:
+    - openshift_version_minor is not defined
+    - (openshift_version | string) in ["3.9"]
   become: yes
 
-- name: Install required packages (3.10)
+- name: Install OpenShift playbooks (3.9) - minor version
+  yum:
+    name:
+      - atomic-openshift-utils-{{ openshift_version_minor }}
+    state: present
+  when:
+    - openshift_version_minor is defined
+    - (openshift_version | string) in ["3.9"]
+  become: yes
+
+- name: Install OpenShift playbooks (3.10, 3.11)
   yum:
     name:
       - openshift-ansible
-      - docker-1.13.1
     state: present
-  when: (openshift_version | string) == "3.10"
+  when:
+    - openshift_version_minor is not defined
+    - (openshift_version | string) in ["3.10", "3.11"]
   become: yes
 
-- name: Install required packages (3.11)
+- name: Install OpenShift playbooks (3.10, 3.11) - minor version
   yum:
     name:
-      - openshift-ansible
-      - docker-1.13.1
+      - openshift-ansible-{{ openshift_version_minor }}
     state: present
-  when: (openshift_version | string) == "3.11"
+  when:
+    - openshift_version_minor is defined
+    - (openshift_version | string) in ["3.10", "3.11"]
   become: yes
 
 - name: Start and enable docker
