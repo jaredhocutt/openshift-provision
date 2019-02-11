@@ -173,7 +173,7 @@ If you are looking to use this project to create and setup the infrastructure
 for an OpenShift install, but skip the install, you can run:
 
 ```bash
-sudo ./ope.py --env-file vars/aws.env --vars-file vars/aws.yml provision --skip-tags openshift_deploy_cluster
+sudo ./op.py --env-file vars/aws.env --vars-file vars/aws.yml provision --skip-tags openshift_deploy_cluster
 ```
 
 Once the provisioning has completed successfully, you will be able to access
