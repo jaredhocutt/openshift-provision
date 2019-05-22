@@ -45,3 +45,6 @@ openshift_users:
     password: password
   - username: user3
     password: password
+
+# Addons
+addon_istio: false

@@ -1,0 +1,14 @@
+---
+
+- name: Istio prep - Update nodes for Elasticsearch max_map_count
+  copy:
+    src: 99-elasticsearch.conf
+    dest: /etc/sysctl.d/99-elasticsearch.conf
+    owner: root
+    group: root
+    mode: 0644
+  become: yes
+
+- name: Istio prep - Update max_map_count
+  command: sysctl vm.max_map_count=262144
+  become: yes
