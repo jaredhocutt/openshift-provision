@@ -92,6 +92,9 @@ class OpenShiftProvision(object):
     def provision(self):
         self._run_playbook_command('playbooks/aws/provision.yml')
 
+    def addon_istio(self):
+        self._run_playbook_command('playbooks/aws/provision.yml --tags addon_istio')
+
     def start_instances(self):
         self._run_playbook_command('playbooks/aws/start_instances.yml')
 
@@ -149,6 +152,7 @@ if __name__ == '__main__':
                                  'stop',
                                  'teardown',
                                  'create_users',
+                                 'addon_istio',
                                  'shell',
                                  'ssh',])
     parser.add_argument('--env-file',
@@ -195,6 +199,8 @@ if __name__ == '__main__':
         op.teardown()
     elif known_args.action == 'create_users':
         op.create_users()
+    elif known_args.action == 'addon_istio':
+        op.addon_istio()
     elif known_args.action == 'shell':
         op.shell()
     elif known_args.action == 'ssh':
