@@ -7,19 +7,19 @@
     dest: /etc/origin/master/master-config.yaml.prepatch
   become: yes
 
-- name: copy master config patch
+- name: copy master config patch file
   copy:
     src: master-config.patch
     dest: /etc/origin/master/master-config.patch
   become: yes
 
-- name: patch master config
+- name: create new master config
   shell: oc ex config patch master-config.yaml.prepatch -p "$(cat master-config.patch)" > new-master-config.yaml
   args:
     chdir: /etc/origin/master/
   become: yes
 
-- name: backup master config
+- name: backup master config and replace with patched version
   copy:
     remote_src: yes
     src: /etc/origin/master/new-master-config.yaml
@@ -33,14 +33,11 @@
 
 - name: install operator
   shell: oc new-project istio-operator && oc new-project istio-system && oc apply -n istio-operator -f https://raw.githubusercontent.com/Maistra/istio-operator/maistra-0.10/deploy/servicemesh-operator.yaml
-  become: yes
 
 - name: copy control plane config
   copy:
     src: istio-installation.yaml
     dest: ~/istio-installation.yaml
-  become: yes
 
 - name: install the control plane
   command: oc create -n istio-system -f ~/istio-installation.yaml
-  become: yes

@@ -33,7 +33,6 @@
   - name: Prepare all nodes for Istio
     include_role:
       name: host_prep_istio
-    with_items: {{ addon_istio }}
     when: addon_istio
   tags:
   - addon_istio
