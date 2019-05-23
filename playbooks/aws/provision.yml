@@ -3,7 +3,7 @@
 - hosts: localhost
   roles:
     - provision_aws
-    - { role: host_facts_aws, tags: ['always'] }
+    - host_facts_aws
 
 - hosts: openshift_cluster_{{ hostvars.localhost.cluster_group_name }}
   any_errors_fatal: yes

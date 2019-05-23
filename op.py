@@ -93,8 +93,7 @@ class OpenShiftProvision(object):
         self._run_playbook_command('playbooks/aws/provision.yml')
 
     def addon_istio(self):
-        self.playbook_args += ['--tags','addon_istio']
-        self._run_playbook_command('playbooks/aws/provision.yml')
+        self._run_playbook_command('playbooks/aws/provision_istio.yml')
 
     def start_instances(self):
         self._run_playbook_command('playbooks/aws/start_instances.yml')
