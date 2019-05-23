@@ -3,7 +3,7 @@
 - hosts: localhost
   roles:
     - provision_aws
-    - host_facts_aws
+    - { role: host_facts_aws, tags: ['always'] }
 
 - hosts: openshift_cluster_{{ hostvars.localhost.cluster_group_name }}
   any_errors_fatal: yes
@@ -33,7 +33,8 @@
   - name: Prepare all nodes for Istio
     include_role:
       name: host_prep_istio
-    when: "{{ addon_istio }} == 'true'"
+    with_items: {{ addon_istio }}
+    when: addon_istio
   tags:
   - addon_istio
 
@@ -42,6 +43,6 @@
   - name: Install Istio using the master node
     include_role:
       name: install_istio
-    when: "{{ addon_istio }} == 'true'"
+    when: addon_istio
   tags:
   - addon_istio
