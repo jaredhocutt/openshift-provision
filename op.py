@@ -92,6 +92,9 @@ class OpenShiftProvision(object):
     def provision(self):
         self._run_playbook_command('playbooks/aws/provision.yml')
 
+    def addon_istio(self):
+        self._run_playbook_command('playbooks/aws/provision_istio.yml')
+
     def start_instances(self):
         self._run_playbook_command('playbooks/aws/start_instances.yml')
 
@@ -143,14 +146,34 @@ def check_file_exists(value):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('action',
-                        choices=['provision',
-                                 'start',
-                                 'stop',
-                                 'teardown',
-                                 'create_users',
-                                 'shell',
-                                 'ssh',])
+    subparsers = parser.add_subparsers()
+
+    parser_provision = subparsers.add_parser('provision')
+    parser_provision.set_defaults(action='provision')
+
+    parser_start = subparsers.add_parser('start')
+    parser_start.set_defaults(action='start')
+
+    parser_stop = subparsers.add_parser('stop')
+    parser_stop.set_defaults(action='stop')
+
+    parser_teardown = subparsers.add_parser('teardown')
+    parser_teardown.set_defaults(action='teardown')
+
+    parser_create_users = subparsers.add_parser('create_users')
+    parser_create_users.set_defaults(action='create_users')
+
+    parser_shell = subparsers.add_parser('shell')
+    parser_shell.set_defaults(action='shell')
+
+    parser_ssh = subparsers.add_parser('ssh')
+    parser_ssh.set_defaults(action='ssh')
+
+    parser_addon = subparsers.add_parser('addon')
+    parser_addon.set_defaults(action='addon')
+    parser_addon.add_argument('addon',
+                              choices=['istio',])
+
     parser.add_argument('--env-file',
                         required=True,
                         type=check_file_exists,
@@ -195,6 +218,9 @@ if __name__ == '__main__':
         op.teardown()
     elif known_args.action == 'create_users':
         op.create_users()
+    elif known_args.action == 'addon':
+        if known_args.addon == 'istio':
+            op.addon_istio()
     elif known_args.action == 'shell':
         op.shell()
     elif known_args.action == 'ssh':

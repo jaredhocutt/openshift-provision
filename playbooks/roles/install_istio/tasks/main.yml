@@ -1,0 +1,63 @@
+---
+
+- name: Copy master config patch file
+  copy:
+    src: master-config.patch
+    dest: /etc/origin/master/master-config.patch
+  become: yes
+
+- name: Create new master config
+  shell: oc ex config patch master-config.yaml --patch "$(cat master-config.patch)" --type merge > master-config.new.yaml
+  args:
+    chdir: /etc/origin/master/
+  become: yes
+
+- name: Replace master config with with patched version
+  copy:
+    remote_src: yes
+    src: /etc/origin/master/master-config.new.yaml
+    dest: /etc/origin/master/master-config.yaml
+    backup: yes
+  register: replace_master_config
+  become: yes
+
+# TODO: delete master-config.new.yaml
+
+- name: Restart master API server and controllers
+  shell: /usr/local/bin/master-restart api && /usr/local/bin/master-restart controllers
+  when: replace_master_config.changed
+  become: yes
+
+- name: Wait for master API and controllers to become available
+  command: oc version
+  register: wait_for_master_api
+  until: wait_for_master_api.rc == 0
+  retries: 10
+  delay: 5
+
+# TODO: check if Istio operator project exists
+
+- name: Create Istio operator project
+  command: oc new-project istio-operator
+
+# TODO: check if Istio operator system exists
+
+- name: Create Istio system project
+  command: oc new-project istio-system
+
+# TODO: check if operator exists
+
+- name: Install operator
+  command: oc apply -n istio-operator -f https://raw.githubusercontent.com/Maistra/istio-operator/maistra-0.10/deploy/servicemesh-operator.yaml
+
+# TODO: check if istio installation exists
+
+- name: Copy control plane config
+  copy:
+    src: istio-installation.yaml
+    dest: /tmp/istio-installation.yaml
+
+- name: install the control plane
+  command: oc create -n istio-system -f /tmp/istio-installation.yaml
+
+# TODO: delete istio-installation.yaml

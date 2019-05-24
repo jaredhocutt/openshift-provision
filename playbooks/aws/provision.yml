@@ -27,3 +27,21 @@
     - create_users
   tags:
     - openshift_deploy_cluster
+
+- hosts: openshift_nodes:&openshift_cluster_{{ hostvars.localhost.cluster_group_name }}
+  tasks:
+  - name: Prepare all nodes for Istio
+    include_role:
+      name: host_prep_istio
+    when:
+      - addons is defined
+      - "'istio' in addons"
+
+- hosts: openshift_role_master:&openshift_cluster_{{ hostvars.localhost.cluster_group_name }}
+  tasks:
+  - name: Install Istio using the master node
+    include_role:
+      name: install_istio
+    when:
+      - addons is defined
+      - "'istio' in addons"
