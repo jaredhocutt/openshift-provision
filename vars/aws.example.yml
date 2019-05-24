@@ -47,4 +47,5 @@ openshift_users:
     password: password
 
 # Addons
-addon_istio: false
+# addons:
+#   - istio
