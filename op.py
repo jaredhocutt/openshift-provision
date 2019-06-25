@@ -21,14 +21,9 @@ class OpenShiftDeploy(object):
         self.vars_file = vars_file
         self.extra_args = extra_args
 
-        self._vars_yaml = None
-
-    @property
-    def vars_yaml(self):
-        if not self._vars_yaml:
-            with open(self.vars_file, 'r') as f:
-                self._vars_yaml = yaml.safe_load(f)
-        return self._vars_yaml
+        self.vars_yaml = self._vars_yaml()
+        self.deployment_cloud = self.vars_yaml['deployment_cloud']
+        self.deployment_type = self.vars_yaml['deployment_type']
 
     def provision(self):
         self._run_playbook(
@@ -47,19 +42,8 @@ class OpenShiftDeploy(object):
             os.path.join(PLAYBOOKS_DIR, 'aws_stop_instances.yml'))
 
     def ssh(self):
-        if self.vars_yaml['deployment_type'].startswith('aws_'):
-            hostname = 'bastion.{}.{}'.format(
-                self.vars_yaml['openshift_cluster_name'],
-                self.vars_yaml['openshift_base_domain'],
-            )
-
-            subprocess.call([
-                'ssh',
-                '-i', self.vars_yaml['aws_keypair_path'],
-                '-o', 'StrictHostKeyChecking=no',
-                '-o', 'UserKnownHostsFile=/dev/null',
-                'ec2-user@{}'.format(hostname),
-            ])
+        if self.deployment_cloud == 'aws':
+            self._ssh_aws()
 
     def _run_playbook(self, playbook):
         cmd_args = [
@@ -68,6 +52,33 @@ class OpenShiftDeploy(object):
         ]
 
         cmd_args = cmd_args + self.extra_args
+        logger.debug(cmd_args)
+
+        subprocess.call(cmd_args)
+
+    def _vars_yaml(self):
+        with open(self.vars_file, 'r') as f:
+            y = yaml.safe_load(f)
+        logger.debug(y)
+
+        return y
+
+    def _ssh_aws(self):
+        hostname = self.vars_yaml.get(
+            'bastion_hostname',
+            'bastion.{}.{}'.format(
+                self.vars_yaml['openshift_cluster_name'],
+                self.vars_yaml['openshift_base_domain'],
+            )
+        )
+
+        cmd_args = [
+            'ssh',
+            '-i', self.vars_yaml['aws_keypair_path'],
+            '-o', 'StrictHostKeyChecking=no',
+            '-o', 'UserKnownHostsFile=/dev/null',
+            'ec2-user@{}'.format(hostname),
+        ]
         logger.debug(cmd_args)
 
         subprocess.call(cmd_args)
