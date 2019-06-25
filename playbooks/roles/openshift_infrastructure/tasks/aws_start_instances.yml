@@ -1,0 +1,6 @@
+---
+
+- name: Start EC2 instances
+  ec2_instance:
+    filters: "{{ provision_ec2_filters }}"
+    state: started

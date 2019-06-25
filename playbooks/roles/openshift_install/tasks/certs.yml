@@ -1,0 +1,32 @@
+---
+
+- name: Get wildcard SSL cert for OpenShift router
+  command: >-
+    docker run --rm --name certbot
+    -v "/etc/letsencrypt:/etc/letsencrypt:z"
+    -v "/var/lib/letsencrypt:/var/lib/letsencrypt:z"
+    -e AWS_ACCESS_KEY_ID={{ lookup('env', 'AWS_ACCESS_KEY_ID') }}
+    -e AWS_SECRET_ACCESS_KEY={{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}
+    certbot/dns-route53 certonly
+    --non-interactive
+    --agree-tos
+    --email "{{ letsencrypt_email_address }}"
+    --dns-route53
+    --dns-route53-propagation-seconds 45
+    --server https://acme-v02.api.letsencrypt.org/directory
+    --domain "{{ openshift_public_hostname }}"
+    --domain "*.apps.{{ openshift_public_hostname }}"
+  args:
+    creates: /etc/letsencrypt/live/{{ openshift_public_hostname }}
+  become: yes
+
+- name: Give the {{ ansible_user }} access to the certs
+  acl:
+    path: "/etc/letsencrypt"
+    entity: "{{ ansible_user }}"
+    etype: user
+    permissions: rx
+    recursive: yes
+    follow: yes
+    state: present
+  become: yes

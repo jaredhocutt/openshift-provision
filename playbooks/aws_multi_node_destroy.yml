@@ -1,0 +1,8 @@
+---
+
+- hosts: localhost
+  gather_facts: no
+  tasks:
+    - import_role:
+        role: openshift_infrastructure
+        tasks_from: aws_multi_node_destroy

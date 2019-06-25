@@ -1,0 +1,10 @@
+---
+# defaults file for openshift_install
+
+openshift_public_hostname: "{{ openshift_cluster_name }}.{{ openshift_base_domain }}"
+openshift_internal_hostname: "{{ openshift_cluster_name }}-internal.{{ openshift_base_domain }}"
+openshift_apps_subdomain: "*.apps.{{ openshift_cluster_name }}.{{ openshift_base_domain }}"
+
+openshift_cluster_id: "{{ openshift_public_hostname | replace('.', '-') }}"
+
+openshift_version_parts: "{{ openshift_version.split('.') }}"

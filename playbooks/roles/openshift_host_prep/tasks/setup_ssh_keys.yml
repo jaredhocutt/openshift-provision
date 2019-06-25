@@ -1,0 +1,22 @@
+---
+
+- name: Create SSH key for bastion
+  command: ssh-keygen -f ~/.ssh/id_rsa -C openshift -P ''
+  args:
+    creates: ~/.ssh/id_rsa
+  run_once: yes
+  delegate_to: "{{ groups.master[0] }}"
+
+- name: Read contents of SSH public key from bastion
+  slurp:
+    src: ~/.ssh/id_rsa.pub
+  changed_when: no
+  run_once: yes
+  delegate_to: "{{ groups.master[0] }}"
+  register: openshift_host_prep_read_ssh_public_key
+
+- name: Add bastion public key to authorized keys
+  lineinfile:
+    line: "{{ openshift_host_prep_read_ssh_public_key.content | b64decode }}"
+    dest: ~/.ssh/authorized_keys
+    mode: 0600

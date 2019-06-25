@@ -1,0 +1,12 @@
+---
+# defaults file for openshift_host_prep
+
+openshift_version_parts: "{{ openshift_version.split('.') }}"
+
+# TODO: Ansible 2.6 is neded for OpenShfit 3.11, but Ansible 2.4 is needed for OpenShift 3.9 and 3.10
+openshift_rhsm_repositories:
+  - rhel-7-server-rpms
+  - rhel-7-server-extras-rpms
+  - rhel-7-server-ose-{{ openshift_version_parts[0] }}.{{ openshift_version_parts[1] }}-rpms
+  - rhel-7-fast-datapath-rpms
+  - rhel-7-server-ansible-2.6-rpms

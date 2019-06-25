@@ -1,16 +1,16 @@
 [[source]]
-url = "https://pypi.python.org/simple"
+url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
 
 [dev-packages]
-pylint = "<2.0.0"
+pylint = "*"
 
 [packages]
-ansible = "==2.6.6"
+ansible = ">=2.8,<2.9"
 boto = "*"
 "boto3" = "*"
-ovirt-engine-sdk-python = "*"
+bullet = "==2.1.0"
 
 [requires]
-python_version = "3.6"
+python_version = "3.7"

@@ -1,0 +1,10 @@
+---
+
+all:
+  hosts:
+    localhost: {}
+  children:
+    openshift: {}
+    master: {}
+    infra: {}
+    compute: {}

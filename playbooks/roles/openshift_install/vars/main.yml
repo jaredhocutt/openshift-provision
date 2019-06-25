@@ -1,0 +1,15 @@
+---
+# vars file for openshift_install
+
+openshift_network_plugin: redhat/openshift-ovs-networkpolicy
+
+use_letsencrypt_certs: yes
+
+ocs_block_host_vol_size: 20
+openshift_registry_volume_size: 20
+openshift_metrics_volume_size: 10
+openshift_logging_volume_size: 10
+openshift_prometheus_volume_size: 10
+openshift_alertmanager_volume_size: 10
+
+openshift_logging_memory_limit: 10

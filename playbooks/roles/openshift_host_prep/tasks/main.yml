@@ -1,0 +1,85 @@
+---
+# tasks file for openshift_host_prep
+
+- name: Ensure hostname is set to FQDN
+  hostname:
+    name: "{{ openshift_hostname }}"
+  become: yes
+
+- import_role:
+    name: jaredhocutt.rhsm
+  vars:
+    rhsm_repositories:
+      - rhel-7-server-rpms
+      - rhel-7-server-extras-rpms
+      - rhel-7-server-ose-3.11-rpms
+      - rhel-7-fast-datapath-rpms
+      - rhel-7-server-ansible-2.6-rpms
+    rhsm_purge_repositories: yes
+  tags: [rhsm]
+
+- name: Update all packages
+  yum:
+    name: "*"
+    state: latest
+    exclude: atomic-openshift-ansible*,openshift-ansible*
+  retries: 3  # This fails sometimes, retry before failing everything
+  until: update_all_packages.rc == 0
+  register: update_all_packages
+  become: yes
+
+- block:
+    - name: Reboot host
+      shell: sleep 30 && shutdown -r now
+      async: 30
+      poll: 0
+      ignore_errors: yes
+      become: yes
+
+    - name: Wait for host to boot
+      wait_for_connection:
+        timeout: 300
+  when: "'kernel' in update_all_packages.results"
+
+- name: Install preferred packages
+  yum:
+    name: "{{ preferred_packages }}"
+    state: present
+  become: yes
+
+- name: Install Docker
+  yum:
+    name: docker-1.13.1
+    state: present
+  become: yes
+
+- name: Write docker-storage-setup file
+  copy:
+    src: docker-storage-setup
+    dest: /etc/sysconfig/docker-storage-setup
+    owner: root
+    group: root
+    mode: 0644
+  register: write_docker_storage_setup_file
+  become: yes
+
+- name: Run docker-storage-setup
+  command: docker-storage-setup
+  when: write_docker_storage_setup_file.changed
+  become: yes
+
+- name: Start and enable docker
+  service:
+    name: docker
+    enabled: yes
+    state: started
+  become: yes
+
+- name: Find name of device to use for OCS
+  set_fact:
+    ocs_device_name: "/dev/{{ item.key }}"
+  changed_when: no
+  loop: "{{ ansible_facts.devices | dict2items }}"
+  when: ansible_facts.devices[item.key].partitions == {}
+
+- import_tasks: setup_ssh_keys.yml

@@ -1,227 +1,145 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import argparse
+import logging
 import os
 import subprocess
+import yaml
+
+from bullet import Bullet
 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-SUPPORTED_CONTAINER_RUNTIMES = ['podman', 'docker']
+PLAYBOOKS_DIR = os.path.join(BASE_DIR, 'playbooks')
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 
-class ContainerRuntimeMissingError(Exception):
-    pass
-
-
-class OpenShiftProvision(object):
-    def __init__(self, env_file, vars_file, no_update=False, dev=False, playbook_args=[]):
-        self.env_file = env_file
+class OpenShiftDeploy(object):
+    def __init__(self, vars_file, extra_args=[]):
         self.vars_file = vars_file
-        self.no_update = no_update
-        self.dev = dev
-        self.playbook_args = playbook_args
+        self.extra_args = extra_args
 
-        self.container_runtime = self._container_runtime()
-        self.container_image = 'quay.io/jhocutt/openshift-provision'
-        self.keys_dir = self._keys_dir()
-        self.container_command_args = self._container_command_args()
+        self._vars_yaml = None
 
-    def _container_runtime(self):
-        for runtime in SUPPORTED_CONTAINER_RUNTIMES:
-            try:
-                subprocess.call([runtime, '--version'],
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE)
-                return runtime
-            except OSError:
-                pass
-
-        raise ContainerRuntimeMissingError()
-
-    def _keys_dir(self):
-        keys_dir = os.path.join(BASE_DIR, 'playbooks', 'aws', 'keys')
-
-        if not os.path.exists(keys_dir):
-            os.mkdir(keys_dir)
-
-        return keys_dir
-
-    def _container_command_args(self):
-        cmd_args = [
-            self.container_runtime,
-            'run',
-            '-it',
-            '--rm',
-            '--env-file', self.env_file,
-            '--volume', '{}:/app_vars:z'.format(os.path.dirname(os.path.abspath(self.vars_file))),
-            '--volume', '{}:/app_keys:z'.format(os.path.join(BASE_DIR, self.keys_dir)),
-        ]
-
-        if self.dev:
-            cmd_args = cmd_args + [
-                '--volume', '{}:/app:z'.format(BASE_DIR),
-            ]
-
-        cmd_args.append(self.container_image)
-
-        return cmd_args
-
-    def _pull_latest_container(self):
-        if self.no_update:
-            print('Skipping image update.')
-            return
-
-        subprocess.call([
-            self.container_runtime,
-            'pull',
-            self.container_image,
-        ])
-
-    def _run_playbook_command(self, playbook):
-        self._pull_latest_container()
-
-        cmd_args = self.container_command_args + [
-            'ansible-playbook',
-            playbook,
-            '-e', 'keys_dir=/app_keys',
-            '-e', '@/app_vars/{}'.format(os.path.basename(self.vars_file)),
-        ] + self.playbook_args
-
-        subprocess.call(cmd_args)
+    @property
+    def vars_yaml(self):
+        if not self._vars_yaml:
+            with open(self.vars_file, 'r') as f:
+                self._vars_yaml = yaml.safe_load(f)
+        return self._vars_yaml
 
     def provision(self):
-        self._run_playbook_command('playbooks/aws/provision.yml')
+        self._run_playbook(
+            os.path.join(PLAYBOOKS_DIR, 'aws_multi_node.yml'))
 
-    def addon_istio(self):
-        self._run_playbook_command('playbooks/aws/provision_istio.yml')
+    def destroy(self):
+        self._run_playbook(
+            os.path.join(PLAYBOOKS_DIR, 'aws_multi_node_destroy.yml'))
 
-    def start_instances(self):
-        self._run_playbook_command('playbooks/aws/start_instances.yml')
+    def start(self):
+        self._run_playbook(
+            os.path.join(PLAYBOOKS_DIR, 'aws_start_instances.yml'))
 
-    def stop_instances(self):
-        self._run_playbook_command('playbooks/aws/stop_instances.yml')
-
-    def teardown(self):
-        self._run_playbook_command('playbooks/aws/teardown.yml')
-
-    def create_users(self):
-        self._run_playbook_command('playbooks/aws/create_users.yml')
-
-    def shell(self):
-        self._pull_latest_container()
-        subprocess.call(self.container_command_args + ['bash',])
+    def stop(self):
+        self._run_playbook(
+            os.path.join(PLAYBOOKS_DIR, 'aws_stop_instances.yml'))
 
     def ssh(self):
-        import yaml
+        if self.vars_yaml['deployment_type'].startswith('aws_'):
+            hostname = 'bastion.{}.{}'.format(
+                self.vars_yaml['openshift_cluster_name'],
+                self.vars_yaml['openshift_base_domain'],
+            )
 
-        with open(self.vars_file, 'r') as f:
-            vars_data = yaml.load(f)
+            subprocess.call([
+                'ssh',
+                '-i', self.vars_yaml['aws_keypair_path'],
+                '-o', 'StrictHostKeyChecking=no',
+                '-o', 'UserKnownHostsFile=/dev/null',
+                'ec2-user@{}'.format(hostname),
+            ])
 
-        bastion_hostname = 'bastion.{}.{}'.format(
-            vars_data['cluster_name'],
-            vars_data['openshift_base_domain']
-        )
-        keypair_filename = '/app_keys/{}-{}.pem'.format(
-            vars_data['cluster_name'],
-            vars_data['openshift_base_domain'].replace('.', '-')
-        )
+    def _run_playbook(self, playbook):
+        cmd_args = [
+            'ansible-playbook', playbook,
+            '-e', '@{}'.format(self.vars_file)
+        ]
 
-        self._pull_latest_container()
-
-        cmd_args = self.container_command_args + [
-            'ssh',
-            '-i', keypair_filename,
-            '-o', 'StrictHostKeyChecking=no',
-            'ec2-user@{}'.format(bastion_hostname),
-        ] + self.playbook_args
+        cmd_args = cmd_args + self.extra_args
+        logger.debug(cmd_args)
 
         subprocess.call(cmd_args)
 
 
-def check_file_exists(value):
-    if not os.path.isfile(value):
-        raise argparse.ArgumentTypeError('The path {} does not exist'.format(value))
-    return value
+class OpenShiftDeployCLI(object):
+    def __init__(self):
+        self.parser = argparse.ArgumentParser()
+        self._add_parser_arguments()
+
+        self.subparsers      = self.parser.add_subparsers()
+        self.sp_provision    = self._add_subparser('provision')
+        self.sp_destroy      = self._add_subparser('destroy')
+        self.sp_start        = self._add_subparser('start')
+        self.sp_stop         = self._add_subparser('stop')
+        self.sp_ssh          = self._add_subparser('ssh')
+
+        self.known_args, self.extra_args = self.parser.parse_known_args()
+
+        self.bullet_style = {
+            "align": 4,
+            "indent": 0,
+            "margin": 1,
+            "pad_right": 2,
+            "shift": 0,
+            "bullet": "⮞",
+        }
+
+        self._vars_file = self.known_args.vars_file
+
+    @staticmethod
+    def check_file_exists(value):
+        if not os.path.isfile(value):
+            raise argparse.ArgumentTypeError('The path {} does not exist'.format(value))
+        return value
+
+    def _add_subparser(self, name):
+        sp = self.subparsers.add_parser(name)
+        sp.set_defaults(action=name)
+        return sp
+
+    def _add_parser_arguments(self):
+        self.parser.add_argument('--vars-file', type=OpenShiftDeployCLI.check_file_exists)
+
+    @property
+    def vars_file(self):
+        if not self._vars_file:
+            result = Bullet(
+                prompt='Select a variable file to use: ',
+                choices=os.listdir(os.path.join(BASE_DIR, 'vars')),
+                **self.bullet_style,
+            ).launch()
+
+            self._vars_file = os.path.join(BASE_DIR, 'vars', result)
+
+        return self._vars_file
+
+    def run(self):
+        deploy = OpenShiftDeploy(self.vars_file, self.extra_args)
+
+        if self.known_args.action == 'provision':
+            deploy.provision()
+        elif self.known_args.action == 'destroy':
+            deploy.destroy()
+        elif self.known_args.action == 'start':
+            deploy.start()
+        elif self.known_args.action == 'stop':
+            deploy.stop()
+        elif self.known_args.action == 'ssh':
+            deploy.ssh()
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    subparsers = parser.add_subparsers()
-
-    parser_provision = subparsers.add_parser('provision')
-    parser_provision.set_defaults(action='provision')
-
-    parser_start = subparsers.add_parser('start')
-    parser_start.set_defaults(action='start')
-
-    parser_stop = subparsers.add_parser('stop')
-    parser_stop.set_defaults(action='stop')
-
-    parser_teardown = subparsers.add_parser('teardown')
-    parser_teardown.set_defaults(action='teardown')
-
-    parser_create_users = subparsers.add_parser('create_users')
-    parser_create_users.set_defaults(action='create_users')
-
-    parser_shell = subparsers.add_parser('shell')
-    parser_shell.set_defaults(action='shell')
-
-    parser_ssh = subparsers.add_parser('ssh')
-    parser_ssh.set_defaults(action='ssh')
-
-    parser_addon = subparsers.add_parser('addon')
-    parser_addon.set_defaults(action='addon')
-    parser_addon.add_argument('addon',
-                              choices=['istio',])
-
-    parser.add_argument('--env-file',
-                        required=True,
-                        type=check_file_exists,
-                        help='file of environment variables')
-    parser.add_argument('--vars-file',
-                        required=True,
-                        type=check_file_exists,
-                        help='file of ansible variables')
-    parser.add_argument('--no-update',
-                        action='store_true')
-    parser.add_argument('--dev',
-                        action='store_true')
-    known_args, extra_args = parser.parse_known_args()
-
-    if os.geteuid() != 0:
-        print('This script requires root privileges.')
-        exit(1)
-
-    try:
-        op = OpenShiftProvision(known_args.env_file,
-                                known_args.vars_file,
-                                known_args.no_update,
-                                known_args.dev,
-                                extra_args)
-    except ContainerRuntimeMissingError:
-        print('\n'.join([
-            'You do not have a supported container runtime installed.',
-            '',
-            'This script supports the following container runtimes:',
-            '\n'.join('  - {}'.format(i) for i in SUPPORTED_CONTAINER_RUNTIMES),
-            '',
-            'Please install one of those options and try again.'
-        ]))
-
-    if known_args.action == 'provision':
-        op.provision()
-    elif known_args.action == 'start':
-        op.start_instances()
-    elif known_args.action == 'stop':
-        op.stop_instances()
-    elif known_args.action == 'teardown':
-        op.teardown()
-    elif known_args.action == 'create_users':
-        op.create_users()
-    elif known_args.action == 'addon':
-        if known_args.addon == 'istio':
-            op.addon_istio()
-    elif known_args.action == 'shell':
-        op.shell()
-    elif known_args.action == 'ssh':
-        op.ssh()
+    cli = OpenShiftDeployCLI()
+    cli.run()

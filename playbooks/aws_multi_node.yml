@@ -1,0 +1,30 @@
+---
+
+- hosts: localhost
+  gather_facts: no
+  tasks:
+    - import_role:
+        role: openshift_infrastructure
+        tasks_from: aws_multi_node
+
+- hosts: openshift
+  gather_facts: no
+  tasks:
+    - name: Wait for hosts to boot
+      wait_for_connection:
+        timeout: 300
+
+    - name: Gather facts
+      setup: {}
+
+    - import_role:
+        name: openshift_host_prep
+
+- hosts: master[0]
+  tasks:
+    - import_role:
+        name: openshift_host_prep
+        tasks_from: bastion
+
+    - import_role:
+        name: openshift_install

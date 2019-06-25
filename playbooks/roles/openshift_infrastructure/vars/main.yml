@@ -1,0 +1,4 @@
+---
+# vars file for openshift_infrastructure
+
+cloud_access_enabled: no

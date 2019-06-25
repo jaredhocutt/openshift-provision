@@ -1,0 +1,16 @@
+---
+# defaults file for openshift_infrastructure
+
+bastion_hostname: "bastion.{{ openshift_cluster_name }}.{{ openshift_base_domain }}"
+
+openshift_public_hostname: "{{ openshift_cluster_name }}.{{ openshift_base_domain }}"
+openshift_internal_hostname: "{{ openshift_cluster_name }}-internal.{{ openshift_base_domain }}"
+openshift_apps_subdomain: "*.apps.{{ openshift_cluster_name }}.{{ openshift_base_domain }}"
+
+openshift_cluster_id: "{{ openshift_public_hostname | replace('.', '-') }}"
+
+openshift_terraform_bucket: "{{ openshift_cluster_id }}"
+
+provision_ec2_filters: "{
+  'tag:kubernetes.io/cluster/{{ openshift_cluster_id }}': '{{ openshift_cluster_id }}'
+}"

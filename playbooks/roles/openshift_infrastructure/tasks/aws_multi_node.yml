@@ -1,0 +1,85 @@
+---
+
+- name: Create S3 bucket for Terraform backend
+  s3_bucket:
+    name: "{{ openshift_terraform_bucket }}"
+    versioning: yes
+    state: present
+
+- name: Provision infrastructure using Terraform
+  terraform:
+    project_path: "{{ role_path }}/terraform/aws_multi_node"
+    force_init: yes
+    state: present
+    variables:
+      bastion_hostname: "{{ bastion_hostname }}"
+      openshift_cluster_id: "{{ openshift_cluster_id }}"
+      openshift_public_hostname: "{{ openshift_public_hostname }}"
+      openshift_internal_hostname: "{{ openshift_internal_hostname }}"
+      openshift_apps_subdomain: "{{ openshift_apps_subdomain }}"
+      route53_hosted_zone_id: "{{ route53_hosted_zone_id }}"
+      aws_keypair: "{{ aws_keypair_name }}"
+      cloud_access_enabled: "{{ 'true' if cloud_access_enabled else 'false' }}"
+      vpc_cidr_block: "{{ vpc_cidr_block | default(omit) }}"
+      instance_type_master: "{{ instance_type_master | default(omit) }}"
+      instance_type_infra: "{{ instance_type_infra | default(omit) }}"
+      instance_type_compute: "{{ instance_type_compute | default(omit) }}"
+      instance_count_compute: "{{ instance_count_compute | default(omit) }}"
+      root_block_device_size: "{{ root_block_device_size | default(omit) }}"
+      ocs_total_capacity: "{{ ocs_total_capacity | default(omit) }}"
+    backend_config:
+      bucket: "{{ openshift_terraform_bucket }}"
+      key: "terraform.tfstate"
+  register: provision_terraform
+
+- name: Add master host to inventory
+  add_host:
+    name: "{{ provision_terraform.outputs.master_instance.value.tags.Name }}"
+    ansible_host: "{{ provision_terraform.outputs.master_eip.value.public_ip }}"
+    ansible_user: ec2-user
+    ansible_ssh_private_key_file: "{{ aws_keypair_path }}"
+    rhsm_consumer_name: "{{ provision_terraform.outputs.master_instance.value.tags.Name }}"
+    ec2_instance_id: "{{ provision_terraform.outputs.master_instance.value.id }}"
+    openshift_hostname: "{{ provision_terraform.outputs.master_instance.value.private_dns }}"
+    groups: openshift, master
+  changed_when: no
+
+- name: Add infra host to inventory
+  add_host:
+    name: "{{ provision_terraform.outputs.infra_instance.value.tags.Name }}"
+    ansible_host: "{{ provision_terraform.outputs.infra_eip.value.public_ip }}"
+    ansible_user: ec2-user
+    ansible_ssh_private_key_file: "{{ aws_keypair_path }}"
+    rhsm_consumer_name: "{{ provision_terraform.outputs.infra_instance.value.tags.Name }}"
+    ec2_instance_id: "{{ provision_terraform.outputs.infra_instance.value.id }}"
+    openshift_hostname: "{{ provision_terraform.outputs.infra_instance.value.private_dns }}"
+    groups: openshift, infra
+  changed_when: no
+
+# The compute hosts do not get an elastic IP (they don't need one), therefore
+# their public IP is ephemeral and changes between reboots. The public IP is
+# needed in order to connect to the instance and the data in the Terraform
+# state does not update when the public IP changes, so we need to look that
+# data up before adding the hosts to inventory.
+- name: Lookup compute host facts
+  ec2_instance_facts:
+    instance_ids: "{{ provision_terraform.outputs.compute_instances.value | map(attribute='id') | list }}"
+  register: compute_host_instance_facts
+
+- name: Add compute hosts to inventory
+  add_host:
+    name: "{{ item.tags.Name }}"
+    ansible_host: "{{ item.public_ip_address }}"
+    ansible_user: ec2-user
+    ansible_ssh_private_key_file: "{{ aws_keypair_path }}"
+    rhsm_consumer_name: "{{ item.tags.Name }}"
+    ec2_instance_id: "{{ item.instance_id }}"
+    openshift_hostname: "{{ item.private_dns_name }}"
+    groups: openshift, compute
+  changed_when: no
+  loop: "{{ compute_host_instance_facts.instances }}"
+
+- name: Make sure instances are started
+  ec2_instance:
+    state: started
+    instance_ids: "{{ groups.openshift | map('extract', hostvars, ['ec2_instance_id']) | list }}"

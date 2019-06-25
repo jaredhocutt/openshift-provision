@@ -1,0 +1,57 @@
+---
+
+- name: Install Docker
+  yum:
+    name: docker-1.13.1
+    state: present
+  become: yes
+
+- name: Install OpenShift playbooks (3.9)
+  yum:
+    name: atomic-openshift-utils
+    state: present
+  when:
+    - openshift_version_parts | length == 2
+    - openshift_version_parts[0] == '3'
+    - openshift_version_parts[1] == '9'
+  become: yes
+
+- name: Install OpenShift playbooks (3.9) z-stream
+  yum:
+    name: atomic-openshift-utils-{{ openshift_version }}
+    state: present
+  when:
+    - openshift_version_parts | length == 3
+    - openshift_version_parts[0] == '3'
+    - openshift_version_parts[1] == '9'
+  become: yes
+
+- name: Install OpenShift playbooks (3.10+)
+  yum:
+    name: openshift-ansible
+    state: present
+  when:
+    - openshift_version_parts | length == 2
+    - openshift_version_parts[0] == '3'
+    - openshift_version_parts[1] | int >= 10
+  become: yes
+
+- name: Install OpenShift playbooks (3.10+) z-stream
+  yum:
+    name:
+      - openshift-ansible-{{ openshift_version }}
+    state: present
+  when:
+    - openshift_version_parts | length == 3
+    - openshift_version_parts[0] == '3'
+    - openshift_version_parts[1] | int >= 10
+  become: yes
+
+- name: Start and enable docker
+  service:
+    name: docker
+    enabled: yes
+    state: started
+  become: yes
+
+# TODO: Create users.htpasswd file in ansible_user_dir

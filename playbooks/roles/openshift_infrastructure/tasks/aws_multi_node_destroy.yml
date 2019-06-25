@@ -1,0 +1,31 @@
+---
+
+- name: Provision infrastructure using Terraform
+  terraform:
+    project_path: "{{ role_path }}/terraform/aws_multi_node"
+    state: absent
+    variables:
+      bastion_hostname: "{{ bastion_hostname }}"
+      openshift_cluster_id: "{{ openshift_cluster_id }}"
+      openshift_public_hostname: "{{ openshift_public_hostname }}"
+      openshift_internal_hostname: "{{ openshift_internal_hostname }}"
+      openshift_apps_subdomain: "{{ openshift_apps_subdomain }}"
+      route53_hosted_zone_id: "{{ route53_hosted_zone_id }}"
+      aws_keypair: "{{ aws_keypair_name }}"
+      cloud_access_enabled: "{{ 'true' if cloud_access_enabled else 'false' }}"
+      vpc_cidr_block: "{{ vpc_cidr_block | default(omit) }}"
+      instance_type_master: "{{ instance_type_master | default(omit) }}"
+      instance_type_infra: "{{ instance_type_infra | default(omit) }}"
+      instance_type_compute: "{{ instance_type_compute | default(omit) }}"
+      instance_count_compute: "{{ instance_count_compute | default(omit) }}"
+      root_block_device_size: "{{ root_block_device_size | default(omit) }}"
+      ocs_total_capacity: "{{ ocs_total_capacity | default(omit) }}"
+    backend_config:
+      bucket: "{{ openshift_terraform_bucket }}"
+      key: "terraform.tfstate"
+
+- name: Create S3 bucket for Terraform backend
+  s3_bucket:
+    name: "{{ openshift_terraform_bucket }}"
+    force: yes
+    state: absent

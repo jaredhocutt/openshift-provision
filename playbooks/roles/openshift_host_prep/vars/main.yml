@@ -1,0 +1,6 @@
+---
+# vars file for openshift_host_prep
+
+preferred_packages:
+  - vim
+  - screen
