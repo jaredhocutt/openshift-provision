@@ -1,6 +1,6 @@
 ---
 
-- name: Provision infrastructure using Terraform
+- name: Destroy infrastructure using Terraform
   terraform:
     project_path: "{{ role_path }}/terraform/aws_multi_node"
     state: absent
@@ -24,7 +24,7 @@
       bucket: "{{ openshift_terraform_bucket }}"
       key: "terraform.tfstate"
 
-- name: Create S3 bucket for Terraform backend
+- name: Delete S3 bucket for Terraform backend
   s3_bucket:
     name: "{{ openshift_terraform_bucket }}"
     force: yes
