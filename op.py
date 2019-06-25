@@ -12,7 +12,7 @@ from bullet import Bullet
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PLAYBOOKS_DIR = os.path.join(BASE_DIR, 'playbooks')
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
 
 
@@ -98,10 +98,13 @@ class OpenShiftDeployCLI(object):
 
         self._vars_file = self.known_args.vars_file
 
+        logger.setLevel(getattr(logging, self.known_args.loglevel.upper()))
+
     @staticmethod
     def check_file_exists(value):
         if not os.path.isfile(value):
-            raise argparse.ArgumentTypeError('The path {} does not exist'.format(value))
+            raise argparse.ArgumentTypeError(
+                'The path {} does not exist'.format(value))
         return value
 
     def _add_subparser(self, name):
@@ -111,6 +114,17 @@ class OpenShiftDeployCLI(object):
 
     def _add_parser_arguments(self):
         self.parser.add_argument('--vars-file', type=OpenShiftDeployCLI.check_file_exists)
+        self.parser.add_argument(
+            '--loglevel',
+            choices=[
+                'DEBUG', 'debug',
+                'INFO', 'info',
+                'WARNING', 'warning',
+                'ERROR', 'error',
+                'CRITICAL', 'critical',
+            ],
+            default='WARNING'
+        )
 
     @property
     def vars_file(self):
