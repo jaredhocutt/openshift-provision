@@ -11,6 +11,7 @@ ansible = ">=2.8,<2.9"
 boto = "*"
 "boto3" = "*"
 bullet = "==2.1.0"
+pyyaml = "*"
 
 [requires]
 python_version = "3.7"
