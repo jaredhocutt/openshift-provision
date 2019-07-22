@@ -25,6 +25,7 @@
   ec2_vpc_subnet:
     vpc_id: "{{ ec2_vpc_id }}"
     region: "{{ aws_region }}"
+    az: "{{ aws_zone }}"
     cidr: "{{ item.cidr_block }}"
     state: absent
   with_items: "{{ ec2_find_subnets.subnets }}"

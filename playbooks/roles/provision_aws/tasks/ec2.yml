@@ -3,6 +3,7 @@
 - name: Create master instance(s)
   ec2:
     region: "{{ aws_region }}"
+    zone: "{{ aws_zone }}"
     instance_type: "{{ ec2_instance_type_master }}"
     image: "{{ ec2_ami_ids[aws_region][ec2_ami_type] }}"
     key_name: "{{ ec2_key_name }}"
@@ -55,6 +56,7 @@
 - name: Create infra instance(s)
   ec2:
     region: "{{ aws_region }}"
+    zone: "{{ aws_zone }}"
     instance_type: "{{ ec2_instance_type_infra }}"
     image: "{{ ec2_ami_ids[aws_region][ec2_ami_type] }}"
     key_name: "{{ ec2_key_name }}"
@@ -103,6 +105,7 @@
 - name: Create app instance(s)
   ec2:
     region: "{{ aws_region }}"
+    zone: "{{ aws_zone }}"
     instance_type: "{{ ec2_instance_type_app }}"
     image: "{{ ec2_ami_ids[aws_region][ec2_ami_type] }}"
     key_name: "{{ ec2_key_name }}"

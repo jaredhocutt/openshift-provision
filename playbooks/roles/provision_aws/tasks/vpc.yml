@@ -56,6 +56,7 @@
   ec2_vpc_subnet:
     vpc_id: "{{ ec2_vpc_id }}"
     region: "{{ aws_region }}"
+    az: "{{ aws_zone }}"
     cidr: "{{ ec2_vpc_cidr_block }}"
     map_public: yes
     tags:

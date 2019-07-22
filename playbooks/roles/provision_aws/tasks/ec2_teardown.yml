@@ -6,6 +6,7 @@
     filters:
       tag:OpenShiftClusterName: "{{ cluster_name }}"
       tag:OpenShiftClusterNameVerbose: "{{ cluster_name_verbose }}"
+      availability-zone: "{{ aws_zone }}"
   register: ec2_find_instances
 
 - name: Delete elastic IPs for instances
@@ -19,6 +20,7 @@
 - name: Delete EC2 instances
   ec2_instance:
     region: "{{ aws_region }}"
+    availability_zone: "{{ aws_zone }}"
     filters:
       tag:OpenShiftClusterName: "{{ cluster_name }}"
       tag:OpenShiftClusterNameVerbose: "{{ cluster_name_verbose }}"
