@@ -17,8 +17,6 @@ cert_email_address: foo@example.com
 
 # The AWS region (i.e. `us-east-1`)
 aws_region: us-east-1
-# The AWS Availability Zone (i.e `us-east-1a`)
-aws_zone: us-east-1a
 # If you have Cloud Access setup for your account, set this to `cloud_access`. Otherwise, set this to `hourly`.
 ec2_ami_type: cloud_access
 # The ID of the Route53 hosted zone
