@@ -1,0 +1,1 @@
+{"admissionConfig": {"pluginConfig": {"ValidatingAdmissionWebhook": {"configuration": {"kind": "WebhookAdmission", "kubeConfigFile": "/dev/null", "apiVersion": "apiserver.config.k8s.io/v1alpha1"}}, "MutatingAdmissionWebhook": {"configuration": {"kind": "WebhookAdmission", "kubeConfigFile": "/dev/null", "apiVersion": "apiserver.config.k8s.io/v1alpha1"}}}}}

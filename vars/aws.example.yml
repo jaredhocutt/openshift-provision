@@ -44,3 +44,7 @@ openshift_users:
     password: password
   - username: user3
     password: password
+
+# Addons
+# addons:
+#   - istio

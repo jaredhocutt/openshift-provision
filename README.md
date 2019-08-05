@@ -79,6 +79,8 @@ Failed to connect to the host via ssh: Shared connection to 18.232.178.150 close
 There are several variables that you will need to define before running the
 AWS provisioner.
 
+**Variables**
+
 | Variable                         | Required           | Default                              | Description                                                                                                                                                                                                                   |
 | -------------------------------- | ------------------ | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `cluster_name`                   | :heavy_check_mark: | `openshift`                          | The name of the cluster.<br><br>This value will be in your DNS entries and should conform to valid DNS characters.                                                                                                            |
@@ -109,6 +111,13 @@ AWS provisioner.
 | `letsencrypt_cert_generation`    |                    | `yes`                                | If you want LetsEncrypt certs generated for the cluster, leave this defaulted to `yes`. Otherwise set to `no`. This feature was originally added to work around hitting LetEncrypt limits and being able to work around them. |
 | `openshift_ssh_password`         |                    |                                      | By default, SSH password auth for the deployed hosts is disabled. If you'd like to enable SSH password auth, set this to the password you'd like to be set for the default user.                                              |
 | `openshift_version_minor`        |                    |                                      | The specific minor version of OpenShift you want to install, otherwise the latest minor release of the `openshift_version` specified will be installed.<br><br>Example: `3.11.43`                                             |
+| `addons`                         |                    |                                      | A list of addons to install in the cluster. See the table of available addons below.                                                                                                                                          |
+
+**Addons**
+
+| Addon    | Description                                                                                                                                                                                                                                                                                                                                                                                                           |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `istio ` | Provision Istio for this cluster.<br><br>Note: you still need to opt-in on each application so this won't break other apps. Also note that several sub-components will get installed so there will be an added cluster footprint of memory and compute usage [Read more about Istio here.](https://docs.openshift.com/container-platform/3.11/servicemesh-install/servicemesh-install.html#updating-master-configuration) |
 
 For your convenience, there is an example variables file at
 `<openshift-provision>/vars/aws.example.yml`. Go ahead and make a copy of this
