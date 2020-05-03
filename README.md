@@ -27,22 +27,6 @@ cd openshift-provision/
 
 ## Known Issues
 
-### Issue: GlusterFS broken in latest releases of OpenShift 3.11
-
-When installing OpenShift 3.11, the latest dot releases have a bug that
-causes GlusterFS to fail or not install correctly.
-
-The workaround for this is to install the last known good version of
-OpenShift 3.11, which is OpenShift 3.11.43.
-
-In your variable file where you have `openshift_version: "3.11"` set,
-add an additional option:
-
-```yaml
-openshift_version: "3.11"
-openshift_version_minor: "3.11.43"
-```
-
 ### Issue: Docker for Mac does not work
 
 Running this tool using Docker for Mac does not work. During the OpenShift
