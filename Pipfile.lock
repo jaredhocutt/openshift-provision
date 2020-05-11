@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "9c342d5dd92cf5b4296826ce0b796cf845a98677f242d67d50e6a88e1b7a77cf"
+            "sha256": "c621bfb3c8bbf54d91afd02fc273a9ad11418131724c521661df82df5f31df3d"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -18,10 +18,10 @@
     "default": {
         "ansible": {
             "hashes": [
-                "sha256:15ffb3447ed9fa072288d0fdeaa0086ed25d65d683441fa777d95cfddeacb108"
+                "sha256:588e4d85ec21cddf959a66cbe62bbfcff6236a1cd44b1264b14a19d34b8dffdf"
             ],
             "index": "pypi",
-            "version": "==2.6.6"
+            "version": "==2.6.18"
         },
         "bcrypt": {
             "hashes": [
@@ -287,11 +287,11 @@
         },
         "urllib3": {
             "hashes": [
-                "sha256:4c291ca23bbb55c76518905869ef34bdd5f0e46af7afe6861e8375643ffee1a0",
-                "sha256:9a247273df709c4fedb38c711e44292304f73f39ab01beda9f6b9fc375669ac3"
+                "sha256:3018294ebefce6572a474f0604c2021e33b3fd8006ecd11d62107a5d2a963527",
+                "sha256:88206b0eb87e6d677d424843ac5209e3fb9d0190d0ee169599165ec25e9d9115"
             ],
-            "index": "pypi",
-            "version": "==1.24.2"
+            "markers": "python_version >= '3.4'",
+            "version": "==1.25.9"
         }
     },
     "develop": {
