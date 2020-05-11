@@ -6,8 +6,7 @@ cluster_name: openshift
 
 # The OpenShift version to install
 # IMPORTANT: Make sure this value is quoted, otherwise it gets read as 3.1 instead of 3.10
-openshift_version: "3.11"
-openshift_version_minor: "3.11.43"
+openshift_version: "3.11.43"
 # The base subdomain to use for your cluster.
 # Example: If you set this to `example.com`, a DNS entry for `<cluster_name>.example.com` will be created)
 openshift_base_domain: example.com
