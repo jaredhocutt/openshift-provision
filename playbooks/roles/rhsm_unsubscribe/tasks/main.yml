@@ -1,0 +1,7 @@
+---
+
+- name: Unregister host from RHSM
+  redhat_subscription:
+    state: absent
+  retries: 3  # This seems to fail sometimes, so lets retry before failing everything
+  become: true
